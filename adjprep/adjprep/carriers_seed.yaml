@@ -1,0 +1,74 @@
+# carriers.yaml — YOUR field intelligence file. Hand-edit freely.
+#
+# This is user-maintained knowledge that compounds with every adjuster
+# meeting: after each one, add what you saw with
+#   adjprep learn <carrier> "pattern you observed"
+# The seed entries below are generalized, publicly discussed industry
+# patterns — treat them as starting hypotheses, not gospel, and replace
+# them with what YOUR meetings actually show.
+
+state_farm:
+  display_name: "State Farm"
+  known_pushback:
+    - "Frequently disputes hail size vs. NOAA reports — bring hail impact photos with a coin or gauge for scale"
+    - "Pushes repair-over-replace on slopes with <8 hits per square"
+    - "May argue mechanical damage on wind-creased shingles"
+  counter_strategy:
+    - "Document 10x10 test squares on EVERY slope, chalk-circle each impact"
+    - "Photograph soft metal damage first — it corroborates hail size independently"
+    - "Cite manufacturer repairability guidelines for brittle/aged shingles"
+
+allstate:
+  display_name: "Allstate"
+  known_pushback:
+    - "Leans on repair scopes for scattered damage; slow to concede full slope replacement"
+    - "Desk reviewers may cut code items (drip edge, ice & water) from the field scope"
+    - "Depreciation holdbacks can be aggressive on older roofs"
+  counter_strategy:
+    - "Chalk and photograph every impact so 'scattered' reads as 'systemic' in the file"
+    - "Attach the local code citation for every code item in the supplement"
+    - "Confirm RCV vs ACV policy language before the meeting and note recoverable depreciation"
+
+farmers:
+  display_name: "Farmers"
+  known_pushback:
+    - "Often schedules ladder-assist or third-party inspectors instead of staff adjusters"
+    - "May classify hail bruising as blistering or manufacturing defect"
+    - "Partial approvals (one slope) are common on directional storms"
+  counter_strategy:
+    - "Meet every inspection in person — never let a ladder-assist walk the roof alone"
+    - "Break a bruise open on video: fractured mat proves impact, blisters have no bruise"
+    - "Document collateral on ALL elevations to argue multi-directional impact"
+
+usaa:
+  display_name: "USAA"
+  known_pushback:
+    - "Generally fair but documentation-heavy — thin files get thin scopes"
+    - "May route supplements through desk review with long turnaround"
+    - "Questions matching/discontinued shingle claims without an ITEL report"
+  counter_strategy:
+    - "Over-document: full photo report, test squares, and measurements in the first submission"
+    - "Submit supplements complete-in-one — piecemeal supplements stall in desk review"
+    - "Order the ITEL match report early when shingles look discontinued"
+
+travelers:
+  display_name: "Travelers"
+  known_pushback:
+    - "Known to dispatch engineer reports to dispute causation on borderline roofs"
+    - "May deny wind creases as thermal cracking or foot traffic"
+    - "Scope tends to omit steep/high charges and tear-off quantities"
+  counter_strategy:
+    - "If an engineer is dispatched, be present and photograph everything they photograph"
+    - "Document crease directionality matching the storm wind vector (NOAA event data)"
+    - "Verify pitch, layers, and access in your own measurements before their scope lands"
+
+liberty_mutual:
+  display_name: "Liberty Mutual"
+  known_pushback:
+    - "Slow claim cycle times — momentum dies between touches"
+    - "Prefers repair estimates from preferred-vendor programs"
+    - "May apply betterment/wear arguments to soft metals"
+  counter_strategy:
+    - "Calendar a follow-up touch every 3 business days; confirm every call in writing"
+    - "Remind the homeowner they choose the contractor — vendor programs are optional"
+    - "Photograph soft metals with scale reference; dents are impact, not wear"

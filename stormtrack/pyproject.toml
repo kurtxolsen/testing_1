@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "stormtrack"
+version = "1.0.0"
+description = "Lead & claim pipeline CLI for storm-damage restoration sales"
+requires-python = ">=3.11"
+dependencies = ["click>=8.0", "rich>=13.0"]
+
+[project.scripts]
+stormtrack = "stormtrack.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["stormtrack*"]

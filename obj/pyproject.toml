@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "obj-cli"
+version = "1.0.0"
+description = "Objection-handling knowledge base + fuzzy search CLI for door-to-door storm restoration sales"
+requires-python = ">=3.11"
+dependencies = ["rapidfuzz>=3.0", "rich>=13.0", "click>=8.0"]
+
+[project.scripts]
+obj = "obj_cli.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["obj_cli*"]
+
+[tool.setuptools.package-data]
+obj_cli = ["kb/*.md"]
