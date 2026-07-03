@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "adjprep"
+version = "1.0.0"
+description = "Adjuster meeting prep sheet generator for storm restoration claims"
+requires-python = ">=3.11"
+dependencies = ["click>=8.0", "reportlab>=4.0", "PyYAML>=6.0", "rich>=13.0"]
+
+[project.scripts]
+adjprep = "adjprep.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["adjprep*"]
+
+[tool.setuptools.package-data]
+adjprep = ["carriers_seed.yaml"]

@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "inspecto"
+version = "1.0.0"
+description = "Carrier-ready, branded PDF inspection report generator for storm-damage photos"
+requires-python = ">=3.11"
+dependencies = ["reportlab>=4.0", "Pillow>=10.0", "click>=8.0", "rich>=13.0"]
+
+[project.optional-dependencies]
+heic = ["pillow-heif"]
+
+[project.scripts]
+inspecto = "inspecto.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["inspecto*"]

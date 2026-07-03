@@ -1,0 +1,235 @@
+#!/usr/bin/env bash
+#
+# newclient — spin up a standardized AQE client workspace in one command.
+#
+#   newclient "John Smith" "123 Elm St, Oklahoma City, OK" \
+#       --carrier "State Farm" --claim "SF-2026-88431" [--phone "..."] \
+#       [--remind "tomorrow 9am" | "friday 2pm"] [--open] [--force] [--sync]
+#
+# Creates the folder tree under "~/Documents/AQE Clients/" (override with
+# AQE_CLIENTS_DIR), writes a metadata README, logs the creation, and adds an
+# Apple Reminders follow-up in the "AQE Follow-Ups" list.
+#
+# macOS notes:
+#   * The Reminders integration uses osascript. The FIRST run will pop the
+#     standard "Terminal wants to access Reminders" permission dialog —
+#     click OK once and it never asks again. No security settings need to
+#     be disabled. On non-macOS systems the reminder step is skipped with
+#     a warning; folder creation still works.
+#   * Reminder time parsing supports: "tomorrow 9am", "today 4pm",
+#     "monday".."sunday" plus a time ("friday 2pm"), and "MM/DD 10am".
+#     Unparseable specs fall back to tomorrow 9:00 AM with a warning.
+
+set -euo pipefail
+
+CLIENTS_DIR="${AQE_CLIENTS_DIR:-$HOME/Documents/AQE Clients}"
+
+usage() {
+  sed -n '2,20p' "$0" | sed 's/^# \{0,1\}//'
+  exit "${1:-0}"
+}
+
+err()  { printf 'newclient: %s\n' "$*" >&2; }
+warn() { printf 'newclient: warning: %s\n' "$*" >&2; }
+
+# --- argument parsing -------------------------------------------------------
+NAME="" ADDRESS="" CARRIER="" CLAIM="" PHONE="" REMIND="tomorrow 9am"
+OPEN=0 FORCE=0 SYNC=0
+positional=()
+while [ $# -gt 0 ]; do
+  case "$1" in
+    -h|--help) usage ;;
+    --carrier) CARRIER="${2:?--carrier needs a value}"; shift 2 ;;
+    --claim)   CLAIM="${2:?--claim needs a value}"; shift 2 ;;
+    --phone)   PHONE="${2:?--phone needs a value}"; shift 2 ;;
+    --remind)  REMIND="${2:?--remind needs a value}"; shift 2 ;;
+    --open)    OPEN=1; shift ;;
+    --force)   FORCE=1; shift ;;
+    --sync)    SYNC=1; shift ;;
+    -*)        err "unknown option: $1"; usage 1 ;;
+    *)         positional+=("$1"); shift ;;
+  esac
+done
+if [ "${#positional[@]}" -lt 2 ]; then
+  err "need a client name and an address"
+  usage 1
+fi
+NAME="${positional[0]}"
+ADDRESS="${positional[1]}"
+
+# --- derive folder name: "Lastname, Firstname — Street" ---------------------
+STREET="${ADDRESS%%,*}"                       # everything before the first comma
+if [[ "$NAME" == *" "* ]]; then
+  FIRST="${NAME%% *}"
+  LAST="${NAME##* }"
+  DISPLAY_NAME="$LAST, $FIRST"
+else
+  DISPLAY_NAME="$NAME"                        # single-word name: use as-is
+fi
+FOLDER_NAME="$DISPLAY_NAME — $STREET"
+CLIENT_DIR="$CLIENTS_DIR/$FOLDER_NAME"
+
+SUBFOLDERS=(
+  "01 Photos/Inspection"
+  "01 Photos/Damage"
+  "01 Photos/Completion"
+  "02 Insurance Docs"
+  "03 Contracts"
+  "04 Correspondence"
+  "05 Measurements & Scope"
+)
+
+# --- create the workspace (idempotent, never overwrites) --------------------
+if [ -d "$CLIENT_DIR" ]; then
+  if [ "$FORCE" -eq 1 ]; then
+    warn "folder exists — adding any missing subfolders only"
+    for sub in "${SUBFOLDERS[@]}"; do mkdir -p "$CLIENT_DIR/$sub"; done
+    echo "Backfilled subfolders in: $CLIENT_DIR"
+    exit 0
+  fi
+  err "folder already exists: $CLIENT_DIR"
+  err "re-run with --force to add missing subfolders (nothing is ever overwritten)"
+  exit 1
+fi
+
+for sub in "${SUBFOLDERS[@]}"; do mkdir -p "$CLIENT_DIR/$sub"; done
+
+TODAY="$(date '+%Y-%m-%d')"
+cat > "$CLIENT_DIR/README.md" <<EOF
+# $NAME — $ADDRESS
+- **Created:** $TODAY
+- **Carrier:** ${CARRIER:-TBD}
+- **Claim #:** ${CLAIM:-TBD}
+- **Phone:** ${PHONE:-TBD}
+- **Status:** New
+
+## Timeline
+- $TODAY: Client folder created
+
+## Notes
+EOF
+
+# --- creation log (CSV-safe: double any embedded quotes) --------------------
+LOG="$CLIENTS_DIR/.client-log.csv"
+[ -f "$LOG" ] || printf 'name,address,timestamp\n' > "$LOG"
+q() { printf '%s' "$1" | sed 's/"/""/g'; }
+printf '"%s","%s","%s"\n' "$(q "$NAME")" "$(q "$ADDRESS")" "$(date '+%Y-%m-%d %H:%M:%S')" >> "$LOG"
+
+echo "Created client workspace: $CLIENT_DIR"
+
+# --- Apple Reminders follow-up ----------------------------------------------
+compute_due() {
+  # Echo "YYYY MM DD HH MM" for the reminder spec in $1; empty on failure.
+  python3 - "$1" <<'PY' 2>/dev/null
+import re, sys
+from datetime import date, datetime, timedelta
+
+spec = sys.argv[1].strip().lower()
+days = ["monday","tuesday","wednesday","thursday","friday","saturday","sunday"]
+today = date.today()
+target, hour, minute = None, 9, 0
+
+# A token only counts as a time if it has :MM or an am/pm suffix.
+for m in re.finditer(r'(\d{1,2})(?::(\d{2}))?\s*(am|pm)?', spec):
+    if m.group(2) or m.group(3):
+        hour = int(m.group(1)); minute = int(m.group(2) or 0)
+        if m.group(3) == "pm" and hour < 12: hour += 12
+        if m.group(3) == "am" and hour == 12: hour = 0
+        break
+
+if "tomorrow" in spec:
+    target = today + timedelta(days=1)
+elif "today" in spec:
+    target = today
+else:
+    for i, name in enumerate(days):
+        if name in spec or name[:3] in spec.split():
+            delta = (i - today.weekday()) % 7 or 7   # always the NEXT such day
+            target = today + timedelta(days=delta)
+            break
+if target is None:
+    m = re.search(r'(\d{1,2})/(\d{1,2})', spec)
+    if m:
+        target = date(today.year, int(m.group(1)), int(m.group(2)))
+        if target < today:
+            target = target.replace(year=today.year + 1)
+if target is None:
+    sys.exit(1)
+print(target.year, target.month, target.day, hour, minute)
+PY
+}
+
+if command -v osascript >/dev/null 2>&1; then
+  due="$(compute_due "$REMIND" || true)"
+  if [ -z "$due" ]; then
+    warn "couldn't parse --remind \"$REMIND\"; defaulting to tomorrow 9:00 AM"
+    due="$(compute_due "tomorrow 9am")"
+  fi
+  read -r Y M D H MIN <<< "$due"
+  TITLE="Follow up: $NAME — $STREET"
+  # AppleScript strings: escape backslashes then double quotes.
+  esc() { printf '%s' "$1" | sed 's/\\/\\\\/g; s/"/\\"/g'; }
+  osascript >/dev/null <<EOF
+tell application "Reminders"
+  if not (exists list "AQE Follow-Ups") then
+    make new list with properties {name:"AQE Follow-Ups"}
+  end if
+  set dueDate to current date
+  set year of dueDate to $Y
+  set month of dueDate to $M
+  set day of dueDate to $D
+  set hours of dueDate to $H
+  set minutes of dueDate to $MIN
+  set seconds of dueDate to 0
+  tell list "AQE Follow-Ups"
+    make new reminder with properties {name:"$(esc "$TITLE")", due date:dueDate, body:"$(esc "$CLIENT_DIR")"}
+  end tell
+end tell
+EOF
+  echo "Reminder set: \"$TITLE\" due $Y-$M-$D $H:$(printf '%02d' "$MIN")"
+else
+  warn "osascript not found (not macOS?) — skipping the Reminders step"
+fi
+
+# --- optional stormtrack sync -----------------------------------------------
+if [ "$SYNC" -eq 1 ]; then
+  ST_DB="${STORMTRACK_DB:-$HOME/.stormtrack/stormtrack.db}"
+  if [ -f "$ST_DB" ] && command -v python3 >/dev/null 2>&1; then
+    NC_NAME="$NAME" NC_ADDRESS="$ADDRESS" NC_PHONE="$PHONE" \
+    NC_CARRIER="$CARRIER" NC_CLAIM="$CLAIM" NC_DB="$ST_DB" python3 <<'PY'
+import os, sqlite3
+from datetime import datetime
+
+conn = sqlite3.connect(os.environ["NC_DB"])
+name, address = os.environ["NC_NAME"], os.environ["NC_ADDRESS"]
+row = conn.execute(
+    "SELECT id FROM leads WHERE name = ? AND address = ?", (name, address)
+).fetchone()
+if row:
+    print(f"stormtrack: lead already exists (#{row[0]}) — not duplicating")
+else:
+    ts = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    conn.execute(
+        """INSERT INTO leads (name, address, phone, carrier, claim_number,
+               status, source, created_at, last_touch)
+           VALUES (?, ?, ?, ?, ?, 'knocked', 'knock', ?, ?)""",
+        (name, address, os.environ["NC_PHONE"], os.environ["NC_CARRIER"],
+         os.environ["NC_CLAIM"], ts, ts),
+    )
+    conn.commit()
+    print(f"stormtrack: lead created for {name}")
+conn.close()
+PY
+  else
+    warn "--sync requested but no stormtrack DB found at $ST_DB (or python3 missing)"
+  fi
+fi
+
+# --- open in Finder -----------------------------------------------------------
+if [ "$OPEN" -eq 1 ]; then
+  if command -v open >/dev/null 2>&1; then
+    open "$CLIENT_DIR"
+  else
+    warn "'open' not available — folder is at: $CLIENT_DIR"
+  fi
+fi
