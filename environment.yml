@@ -1,0 +1,12 @@
+name: base
+channels:
+  - defaults
+dependencies:
+  - pip
+  - pip:
+      - click>=8.0
+      - rich>=13.0
+      - rapidfuzz>=3.0
+      - reportlab>=4.0
+      - Pillow>=10.0
+      - PyYAML>=6.0

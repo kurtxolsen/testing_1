@@ -26,8 +26,8 @@ console = Console()
 # ---------------------------------------------------------------------------
 # Branding — edit these to restyle every report.
 COMPANY = "American Quality Exteriors"
-TAGLINE = "Storm Restoration Specialists"  # placeholder — set your real tagline
-CONTACT = "americanqualityexteriors.example — (405) 555-0100"  # placeholder contact block
+TAGLINE = "Storm Restoration Specialists"
+CONTACT = "americanqualityexteriors.com — (918) 510-6053"
 PRIMARY = HexColor("#1B3A5C")  # navy
 ACCENT = HexColor("#E8A020")   # gold
 
