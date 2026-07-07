@@ -58,3 +58,17 @@ Environment overrides (all optional): `STORMTRACK_DB`, `AQE_CLIENTS_DIR`,
 
 Every command has `--help` with a usage example. `stormtrack demo` seeds 10
 test leads if you want to poke around safely.
+
+## Development
+
+The tools import straight from the checkout (via `tests/conftest.py`), so no
+install is needed to run the suite:
+
+```bash
+pip install pytest click rich rapidfuzz reportlab Pillow PyYAML
+pytest -q
+```
+
+Tests are hermetic — each uses a temp database / knowledge-base directory via
+the `STORMTRACK_DB`, `OBJ_KB_DIR`, and `ADJPREP_HOME` overrides, so running
+them never touches your real field data.
