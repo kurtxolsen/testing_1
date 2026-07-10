@@ -73,6 +73,55 @@ def money(value) -> str:
     return f"${value:,.0f}" if value else "—"
 
 
+def is_breaching(status: str, stale_days: int) -> bool:
+    """True if a lead in `status`, untouched for `stale_days`, needs a follow-up.
+
+    Statuses without a threshold (terminal states, closed) never breach. A
+    threshold of 0 is a same-day reminder: breach once a full day has passed.
+    """
+    threshold = db.FOLLOWUP_THRESHOLDS.get(status)
+    if threshold is None:
+        return False
+    if threshold == 0:
+        return stale_days >= 1
+    return stale_days > threshold
+
+
+def pipeline_stats(leads):
+    """Aggregate the pipeline: per-status counts, total value, and conversion.
+
+    `leads` is any iterable of mappings exposing "status" and "estimated_value".
+    Returns (counts, values, conversions):
+      counts[status]      -> int
+      values[status]      -> float (sum of estimated_value, missing counts as 0)
+      conversions[stage]  -> float percent of leads that reached this pipeline
+                             stage and also reached the next one, or None when
+                             undefined (nothing reached the stage, or it is the
+                             final pipeline stage). Terminal states are omitted.
+    """
+    counts = {s: 0 for s in db.ALL_STATUSES}
+    values = {s: 0.0 for s in db.ALL_STATUSES}
+    for lead in leads:
+        counts[lead["status"]] += 1
+        values[lead["status"]] += lead["estimated_value"] or 0
+
+    # A lead "reached" stage i if its current pipeline index is >= i.
+    reached = [
+        sum(
+            1 for lead in leads
+            if lead["status"] in db.PIPELINE and db.PIPELINE.index(lead["status"]) >= i
+        )
+        for i in range(len(db.PIPELINE))
+    ]
+    conversions = {}
+    for i, stage in enumerate(db.PIPELINE):
+        if i + 1 < len(db.PIPELINE) and reached[i]:
+            conversions[stage] = 100 * reached[i + 1] / reached[i]
+        else:
+            conversions[stage] = None
+    return counts, values, conversions
+
+
 # ---------------------------------------------------------------------------
 # CLI
 
@@ -208,7 +257,7 @@ def followups():
     for lead in rows:
         threshold = db.FOLLOWUP_THRESHOLDS[lead["status"]]
         stale = days_since(lead["last_touch"])
-        if (threshold == 0 and stale >= 1) or (threshold > 0 and stale > threshold):
+        if is_breaching(lead["status"], stale):
             breaches.append((stale - threshold, stale, threshold, lead))
 
     if not breaches:
@@ -243,20 +292,7 @@ def pipeline():
     """
     conn = db.connect()
     leads = conn.execute("SELECT status, estimated_value FROM leads").fetchall()
-
-    counts = {s: 0 for s in db.ALL_STATUSES}
-    values = {s: 0.0 for s in db.ALL_STATUSES}
-    for lead in leads:
-        counts[lead["status"]] += 1
-        values[lead["status"]] += lead["estimated_value"] or 0
-
-    # A lead "reached" stage i if its current stage index is >= i.
-    reached = []
-    for i in range(len(db.PIPELINE)):
-        reached.append(sum(
-            1 for lead in leads
-            if lead["status"] in db.PIPELINE and db.PIPELINE.index(lead["status"]) >= i
-        ))
+    counts, values, conversions = pipeline_stats(leads)
 
     table = Table(title=f"Pipeline — {len(leads)} leads")
     table.add_column("Status")
@@ -264,11 +300,10 @@ def pipeline():
     table.add_column("Est. value", justify="right")
     table.add_column("Conversion →", justify="right")
 
-    for i, stage in enumerate(db.PIPELINE):
-        conv = "—"
-        if i + 1 < len(db.PIPELINE) and reached[i]:
-            conv = f"{100 * reached[i + 1] / reached[i]:.0f}%"
-        table.add_row(stage, str(counts[stage]), money(values[stage]), conv)
+    for stage in db.PIPELINE:
+        conv = conversions[stage]
+        conv_str = f"{conv:.0f}%" if conv is not None else "—"
+        table.add_row(stage, str(counts[stage]), money(values[stage]), conv_str)
     for stage in db.TERMINAL:
         table.add_row(f"[dim]{stage}[/dim]", str(counts[stage]), money(values[stage]), "")
     console.print(table)
