@@ -1,0 +1,768 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#1B3A5C">
+<title>AQE Field</title>
+<style>
+  :root {
+    --bg:#F2F4F7; --card:#FFFFFF; --ink:#16273A; --muted:#5C6B7E;
+    --navy:#1B3A5C; --navy-soft:#E7EDF4; --gold:#E8A020; --gold-ink:#8A5D0D;
+    --line:#DCE2EA; --red:#B7362A; --red-soft:#F9E9E7; --green:#2E7D4F; --green-soft:#E7F2EB;
+    --amber:#9A6A0F; --amber-soft:#FAF0DC;
+    --sheet-shadow:0 -12px 40px rgba(22,39,58,.18);
+  }
+  @media (prefers-color-scheme: dark) { :root {
+    --bg:#0D1622; --card:#16243A; --ink:#E8ECF2; --muted:#8FA0B5;
+    --navy:#3E6EA5; --navy-soft:#1D3049; --gold:#F0AC36; --gold-ink:#F0AC36;
+    --line:#25374F; --red:#E06050; --red-soft:#3A1F1D; --green:#58B380; --green-soft:#173226;
+    --amber:#E3B45B; --amber-soft:#33290F;
+    --sheet-shadow:0 -12px 40px rgba(0,0,0,.5);
+  }}
+  :root[data-theme="light"] {
+    --bg:#F2F4F7; --card:#FFFFFF; --ink:#16273A; --muted:#5C6B7E;
+    --navy:#1B3A5C; --navy-soft:#E7EDF4; --gold:#E8A020; --gold-ink:#8A5D0D;
+    --line:#DCE2EA; --red:#B7362A; --red-soft:#F9E9E7; --green:#2E7D4F; --green-soft:#E7F2EB;
+    --amber:#9A6A0F; --amber-soft:#FAF0DC;
+    --sheet-shadow:0 -12px 40px rgba(22,39,58,.18);
+  }
+  :root[data-theme="dark"] {
+    --bg:#0D1622; --card:#16243A; --ink:#E8ECF2; --muted:#8FA0B5;
+    --navy:#3E6EA5; --navy-soft:#1D3049; --gold:#F0AC36; --gold-ink:#F0AC36;
+    --line:#25374F; --red:#E06050; --red-soft:#3A1F1D; --green:#58B380; --green-soft:#173226;
+    --amber:#E3B45B; --amber-soft:#33290F;
+    --sheet-shadow:0 -12px 40px rgba(0,0,0,.5);
+  }
+
+  * { box-sizing:border-box; }
+  html,body { margin:0; }
+  body {
+    background:var(--bg); color:var(--ink);
+    font:16px/1.45 -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+    -webkit-font-smoothing:antialiased; padding-bottom:calc(76px + env(safe-area-inset-bottom));
+  }
+  button { font:inherit; color:inherit; background:none; border:0; padding:0; cursor:pointer; }
+  button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+    outline:2px solid var(--gold); outline-offset:2px;
+  }
+  input, select, textarea {
+    font:inherit; color:var(--ink); background:var(--card);
+    border:1px solid var(--line); border-radius:10px; padding:10px 12px; width:100%;
+  }
+  a { color:var(--navy); }
+
+  /* ---- header ---- */
+  header {
+    position:sticky; top:0; z-index:20; background:var(--navy);
+    padding:calc(10px + env(safe-area-inset-top)) 16px 10px;
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  :root[data-theme="dark"] header, :root:not([data-theme="light"]) header { }
+  header .brand { color:#fff; font-weight:700; letter-spacing:.04em; font-size:15px; }
+  header .brand small { display:block; font-weight:400; letter-spacing:.14em; font-size:9px;
+    color:var(--gold); text-transform:uppercase; }
+  header .h-actions { display:flex; gap:14px; }
+  header .h-actions button { color:#fff; opacity:.85; font-size:13px; }
+
+  main { padding:14px 14px 0; max-width:640px; margin:0 auto; }
+  .view { display:none; }
+  .view.active { display:block; }
+
+  .eyebrow { font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted);
+    font-weight:600; margin:18px 2px 8px; }
+  .eyebrow:first-child { margin-top:2px; }
+
+  /* ---- pipeline strip ---- */
+  .pipe { display:flex; gap:6px; overflow-x:auto; padding:2px 2px 10px; -webkit-overflow-scrolling:touch; }
+  .pipe button { flex:0 0 auto; background:var(--card); border:1px solid var(--line);
+    border-radius:999px; padding:5px 11px; font-size:12.5px; color:var(--muted); white-space:nowrap; }
+  .pipe button b { color:var(--ink); font-variant-numeric:tabular-nums; }
+  .pipe button.on { background:var(--navy); border-color:var(--navy); color:#fff; }
+  .pipe button.on b { color:var(--gold); }
+
+  /* ---- cards ---- */
+  .card { background:var(--card); border:1px solid var(--line); border-radius:14px;
+    padding:13px 14px; margin-bottom:10px; position:relative; }
+  .lead-card { padding-left:18px; width:100%; text-align:left; display:block; }
+  .lead-card::before { content:""; position:absolute; left:0; top:10px; bottom:10px; width:4px;
+    border-radius:0 4px 4px 0; background:var(--stripe, var(--line)); }
+  .lead-top { display:flex; justify-content:space-between; gap:10px; align-items:baseline; }
+  .lead-name { font-weight:650; font-size:16.5px; }
+  .lead-val { color:var(--muted); font-size:13px; font-variant-numeric:tabular-nums; }
+  .lead-sub { color:var(--muted); font-size:13.5px; margin-top:2px; }
+  .badges { display:flex; flex-wrap:wrap; gap:6px; margin-top:9px; }
+  .chip { font-size:11.5px; font-weight:600; letter-spacing:.02em; border-radius:999px; padding:3px 9px; }
+  .chip.status { background:var(--navy-soft); color:var(--navy); }
+  .chip.ok { background:var(--green-soft); color:var(--green); }
+  .chip.warn { background:var(--amber-soft); color:var(--amber); }
+  .chip.late { background:var(--red-soft); color:var(--red); }
+
+  .empty { text-align:center; color:var(--muted); padding:44px 24px; font-size:14.5px; }
+  .empty b { display:block; font-size:17px; color:var(--ink); margin-bottom:6px; }
+
+  /* ---- search ---- */
+  .searchrow { display:flex; gap:8px; margin-bottom:12px; }
+  .searchrow input { flex:1; }
+  .btn { background:var(--navy); color:#fff; border-radius:10px; padding:10px 16px; font-weight:600; }
+  .btn.gold { background:var(--gold); color:#20293A; }
+  .btn.ghost { background:var(--card); color:var(--ink); border:1px solid var(--line); }
+  .btn.danger { background:var(--red-soft); color:var(--red); }
+  .btn:disabled { opacity:.5; }
+
+  /* ---- objections ---- */
+  .cats { display:flex; gap:6px; overflow-x:auto; padding-bottom:10px; -webkit-overflow-scrolling:touch; }
+  .cats button { flex:0 0 auto; background:var(--card); border:1px solid var(--line);
+    border-radius:999px; padding:5px 11px; font-size:12.5px; color:var(--muted); white-space:nowrap; }
+  .cats button.on { background:var(--gold); border-color:var(--gold); color:#20293A; font-weight:650; }
+  .obj-q { font-weight:650; font-size:15.5px; }
+  .obj-cat { color:var(--muted); font-size:12px; margin-top:2px; }
+  .obj-body { display:none; margin-top:10px; border-top:1px solid var(--line); padding-top:10px; }
+  .obj-open .obj-body { display:block; }
+  .obj-sec { font-size:11px; letter-spacing:.1em; text-transform:uppercase; font-weight:700; margin:10px 0 3px; }
+  .obj-sec.rf { color:var(--navy); } .obj-sec.rs { color:var(--gold-ink); } .obj-sec.ps { color:var(--muted); }
+  .obj-body p { margin:0 0 4px; font-size:14.5px; }
+  .obj-body p.say { background:var(--navy-soft); border-radius:10px; padding:10px 12px; }
+
+  /* ---- intel ---- */
+  .intel-cols h4 { margin:12px 0 4px; font-size:12px; letter-spacing:.08em; text-transform:uppercase; }
+  .intel-cols h4.pb { color:var(--red); } .intel-cols h4.cs { color:var(--green); }
+  .intel-cols ul { margin:0; padding-left:18px; font-size:14px; }
+  .intel-cols li { margin-bottom:5px; }
+
+  /* ---- sheet / modal ---- */
+  .sheet-wrap { position:fixed; inset:0; z-index:40; display:none; }
+  .sheet-wrap.open { display:block; }
+  .scrim { position:absolute; inset:0; background:rgba(10,18,28,.45); }
+  .sheet { position:absolute; left:0; right:0; bottom:0; max-height:88%; overflow-y:auto;
+    background:var(--bg); border-radius:18px 18px 0 0; box-shadow:var(--sheet-shadow);
+    padding:10px 16px calc(20px + env(safe-area-inset-bottom)); }
+  .sheet .grab { width:38px; height:4px; border-radius:2px; background:var(--line); margin:2px auto 12px; }
+  .sheet h2 { margin:0 0 12px; font-size:19px; }
+  .frow { margin-bottom:10px; }
+  .frow label { display:block; font-size:12px; font-weight:600; color:var(--muted); margin-bottom:4px;
+    letter-spacing:.04em; text-transform:uppercase; }
+  .frow2 { display:flex; gap:10px; } .frow2 .frow { flex:1; }
+  .sheet .actions { display:flex; gap:10px; margin-top:14px; }
+  .sheet .actions .btn { flex:1; text-align:center; }
+
+  .detail-links { display:flex; gap:8px; margin:10px 0; }
+  .detail-links a { flex:1; text-align:center; background:var(--card); border:1px solid var(--line);
+    border-radius:10px; padding:9px 4px; font-size:13.5px; text-decoration:none; font-weight:600; }
+  .touchlog { font-size:13.5px; }
+  .touchlog li { margin-bottom:6px; }
+  .touchlog .t-when { color:var(--muted); font-size:12px; }
+
+  /* ---- quiz ---- */
+  .quiz-card { text-align:center; padding:26px 18px; }
+  .quiz-card .q { font-size:19px; font-weight:650; text-wrap:balance; margin:8px 0 18px; }
+
+  /* ---- tab bar ---- */
+  nav.tabbar { position:fixed; left:0; right:0; bottom:0; z-index:30;
+    background:var(--card); border-top:1px solid var(--line);
+    display:flex; padding:6px 8px calc(6px + env(safe-area-inset-bottom)); }
+  nav.tabbar button { flex:1; display:flex; flex-direction:column; align-items:center; gap:2px;
+    color:var(--muted); font-size:10.5px; font-weight:600; letter-spacing:.02em; padding:4px 0;
+    position:relative; }
+  nav.tabbar button.on { color:var(--navy); }
+  nav.tabbar svg { width:23px; height:23px; }
+  nav.tabbar .nbadge { position:absolute; top:-1px; right:calc(50% - 21px);
+    background:var(--red); color:#fff; border-radius:999px; font-size:10px; min-width:16px;
+    height:16px; line-height:16px; padding:0 4px; font-variant-numeric:tabular-nums; }
+
+  .fab { position:fixed; right:18px; bottom:calc(86px + env(safe-area-inset-bottom)); z-index:25;
+    width:54px; height:54px; border-radius:50%; background:var(--gold); color:#20293A;
+    font-size:30px; line-height:54px; text-align:center; box-shadow:0 6px 18px rgba(0,0,0,.25); }
+
+  .toast { position:fixed; left:50%; transform:translateX(-50%);
+    bottom:calc(96px + env(safe-area-inset-bottom)); z-index:50; background:var(--ink); color:var(--bg);
+    padding:9px 16px; border-radius:999px; font-size:13.5px; opacity:0; transition:opacity .2s; pointer-events:none; }
+  .toast.show { opacity:1; }
+  @media (prefers-reduced-motion: reduce) { .toast { transition:none; } }
+</style>
+
+<header>
+  <div class="brand">AMERICAN QUALITY EXTERIORS<small>Field Toolkit</small></div>
+  <div class="h-actions">
+    <button id="btn-export" aria-label="Backup data">Backup</button>
+    <button id="btn-import" aria-label="Restore data">Restore</button>
+  </div>
+</header>
+
+<main>
+  <!-- LEADS -->
+  <section class="view active" id="view-leads">
+    <div class="pipe" id="pipe"></div>
+    <div class="searchrow"><input id="lead-search" type="search" placeholder="Search name, address, carrier"></div>
+    <div id="lead-list"></div>
+  </section>
+
+  <!-- FOLLOW-UPS -->
+  <section class="view" id="view-followups">
+    <div class="eyebrow">Breaching staleness thresholds</div>
+    <div id="fu-list"></div>
+  </section>
+
+  <!-- OBJECTIONS -->
+  <section class="view" id="view-obj">
+    <div class="searchrow">
+      <input id="obj-search" type="search" placeholder='Try "deductible" or "storm chaser"'>
+      <button class="btn gold" id="btn-quiz">Quiz</button>
+    </div>
+    <div class="cats" id="obj-cats"></div>
+    <div id="obj-list"></div>
+  </section>
+
+  <!-- INTEL -->
+  <section class="view" id="view-intel">
+    <div class="eyebrow">Carrier field intelligence</div>
+    <div id="intel-list"></div>
+  </section>
+</main>
+
+<button class="fab" id="fab" aria-label="Add lead">+</button>
+
+<nav class="tabbar">
+  <button data-tab="leads" class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 20V9.5L12 4l8 5.5V20h-5v-6h-6v6H4z"/></svg>Leads</button>
+  <button data-tab="followups"><span class="nbadge" id="fu-badge" hidden></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8.5"/><path d="M12 7v5l3.5 2"/></svg>Follow-ups</button>
+  <button data-tab="obj"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 5h16v11H9l-5 4V5z"/></svg>Objections</button>
+  <button data-tab="intel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l8 4-8 4-8-4 8-4zM4 11l8 4 8-4M4 15l8 4 8-4"/></svg>Intel</button>
+</nav>
+
+<!-- add/edit lead sheet -->
+<div class="sheet-wrap" id="sheet-add">
+  <div class="scrim" data-close></div>
+  <div class="sheet">
+    <div class="grab"></div>
+    <h2 id="add-title">New lead</h2>
+    <div class="frow"><label for="f-name">Name *</label><input id="f-name" autocomplete="off"></div>
+    <div class="frow"><label for="f-address">Address</label><input id="f-address" autocomplete="off"></div>
+    <div class="frow2">
+      <div class="frow"><label for="f-phone">Phone</label><input id="f-phone" inputmode="tel"></div>
+      <div class="frow"><label for="f-value">Est. value $</label><input id="f-value" inputmode="numeric"></div>
+    </div>
+    <div class="frow2">
+      <div class="frow"><label for="f-carrier">Carrier</label><input id="f-carrier"></div>
+      <div class="frow"><label for="f-source">Source</label>
+        <select id="f-source"><option>knock</option><option>referral</option><option>sign-call</option><option>canvass</option></select></div>
+    </div>
+    <div class="frow"><label for="f-notes">Notes</label><textarea id="f-notes" rows="2"></textarea></div>
+    <div class="actions">
+      <button class="btn ghost" data-close>Cancel</button>
+      <button class="btn" id="btn-save-lead">Save lead</button>
+    </div>
+  </div>
+</div>
+
+<!-- lead detail sheet -->
+<div class="sheet-wrap" id="sheet-detail">
+  <div class="scrim" data-close></div>
+  <div class="sheet" id="detail-body"></div>
+</div>
+
+<!-- quiz sheet -->
+<div class="sheet-wrap" id="sheet-quiz">
+  <div class="scrim" data-close></div>
+  <div class="sheet">
+    <div class="grab"></div>
+    <div class="quiz-card" id="quiz-body"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status"></div>
+<input type="file" id="import-file" accept="application/json" hidden>
+
+<script>
+"use strict";
+
+/* ================= pipeline model (mirrors stormtrack) ================= */
+const PIPELINE = ["knocked","inspected","claim-filed","adjuster-scheduled","adjuster-met",
+                  "approved","contract-signed","build-scheduled","built","closed"];
+const TERMINAL = ["dead","denied"];
+const THRESHOLDS = { "knocked":2,"inspected":1,"claim-filed":3,"adjuster-scheduled":0,
+  "adjuster-met":1,"approved":1,"contract-signed":5,"build-scheduled":7 };
+const TOUCH_TYPES = ["call","text","door","email","adjuster-meeting","note"];
+
+/* ================= storage ================= */
+const KEY = "aqe-field-v1";
+let db = { leads: [], intelNotes: {} , seq: 1 };
+try { const raw = localStorage.getItem(KEY); if (raw) db = Object.assign(db, JSON.parse(raw)); } catch (e) {}
+function save() { try { localStorage.setItem(KEY, JSON.stringify(db)); } catch (e) { toast("Couldn't save — storage full?"); } }
+
+/* ================= helpers ================= */
+const $ = (s, el=document) => el.querySelector(s);
+const $$ = (s, el=document) => [...el.querySelectorAll(s)];
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const money = v => v ? "$" + Number(v).toLocaleString() : "";
+const daysSince = ts => Math.floor((Date.now() - ts) / 86400000);
+function toast(msg) { const t = $("#toast"); t.textContent = msg; t.classList.add("show");
+  clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove("show"), 2200); }
+
+function staleness(lead) {
+  if (!(lead.status in THRESHOLDS)) return null;
+  const th = THRESHOLDS[lead.status], d = daysSince(lead.lastTouch);
+  const isToday = new Date(lead.lastTouch).toDateString() === new Date().toDateString();
+  if (th === 0) return isToday ? { level:"ok", d } : { level: d >= 2 ? "late" : "warn", d, over: d };
+  if (d <= th) return { level:"ok", d };
+  return { level: d >= 2*th ? "late" : "warn", d, over: d - th };
+}
+
+/* ================= leads view ================= */
+let pipeFilter = null;
+function renderPipe() {
+  const counts = {}; db.leads.forEach(l => counts[l.status] = (counts[l.status]||0)+1);
+  $("#pipe").innerHTML = [["All", null, db.leads.length],
+      ...PIPELINE.concat(TERMINAL).map(s => [s, s, counts[s]||0])]
+    .filter(([,, n], i) => i === 0 || n > 0)
+    .map(([label, val, n]) => `<button data-pf="${val ?? ""}" class="${pipeFilter===val?"on":""}">${label} <b>${n}</b></button>`)
+    .join("");
+}
+function stripeFor(lead) {
+  const s = staleness(lead);
+  if (lead.status === "dead") return "var(--line)";
+  if (lead.status === "denied") return "var(--red)";
+  if (!s || s.level === "ok") return "var(--green)";
+  return s.level === "late" ? "var(--red)" : "var(--amber)";
+}
+function leadCard(lead) {
+  const s = staleness(lead);
+  let stale = "";
+  if (s && s.level !== "ok") stale = `<span class="chip ${s.level}">${s.d}d stale</span>`;
+  return `<button class="card lead-card" data-lead="${lead.id}" style="--stripe:${stripeFor(lead)}">
+    <div class="lead-top"><span class="lead-name">${esc(lead.name)}</span>
+      <span class="lead-val">${money(lead.value)}</span></div>
+    ${lead.address ? `<div class="lead-sub">${esc(lead.address)}</div>` : ""}
+    <div class="badges"><span class="chip status">${lead.status}</span>${stale}
+      ${lead.carrier ? `<span class="chip status">${esc(lead.carrier)}</span>` : ""}</div>
+  </button>`;
+}
+function renderLeads() {
+  renderPipe();
+  const q = $("#lead-search").value.trim().toLowerCase();
+  let list = db.leads.slice().sort((a,b) => b.lastTouch - a.lastTouch);
+  if (pipeFilter) list = list.filter(l => l.status === pipeFilter);
+  if (q) list = list.filter(l => (l.name+" "+(l.address||"")+" "+(l.carrier||"")).toLowerCase().includes(q));
+  $("#lead-list").innerHTML = list.length ? list.map(leadCard).join("")
+    : `<div class="empty"><b>${db.leads.length ? "No matches" : "No leads yet"}</b>
+       ${db.leads.length ? "Try a different search or filter." : "Tap + after your next knock."}</div>`;
+}
+
+/* ================= follow-ups ================= */
+function renderFollowups() {
+  const due = db.leads.map(l => ({ l, s: staleness(l) }))
+    .filter(x => x.s && x.s.level !== "ok")
+    .sort((a,b) => (b.s.over||0) - (a.s.over||0));
+  $("#fu-badge").hidden = !due.length;
+  $("#fu-badge").textContent = due.length;
+  $("#fu-list").innerHTML = due.length ? due.map(({l, s}) =>
+    `<button class="card lead-card" data-lead="${l.id}" style="--stripe:${s.level==="late"?"var(--red)":"var(--amber)"}">
+       <div class="lead-top"><span class="lead-name">${esc(l.name)}</span>
+         <span class="chip ${s.level}">+${s.over}d overdue</span></div>
+       <div class="lead-sub">${l.status} · last touch ${s.d}d ago${l.phone ? " · " + esc(l.phone) : ""}</div>
+     </button>`).join("")
+    : `<div class="empty"><b>Nothing overdue</b>Go knock.</div>`;
+}
+
+/* ================= lead detail ================= */
+let detailId = null;
+function openDetail(id) {
+  detailId = id;
+  const l = db.leads.find(x => x.id === id); if (!l) return;
+  const idx = PIPELINE.indexOf(l.status);
+  const next = idx >= 0 && idx < PIPELINE.length - 1 ? PIPELINE[idx+1] : null;
+  const mapsUrl = "https://maps.apple.com/?q=" + encodeURIComponent(l.address || "");
+  $("#detail-body").innerHTML = `
+    <div class="grab"></div>
+    <h2>${esc(l.name)}</h2>
+    ${l.address ? `<div class="lead-sub">${esc(l.address)}</div>` : ""}
+    <div class="badges" style="margin:8px 0 2px">
+      <span class="chip status">${l.status}</span>
+      ${l.carrier ? `<span class="chip status">${esc(l.carrier)}</span>` : ""}
+      ${l.value ? `<span class="chip ok">${money(l.value)}</span>` : ""}
+      <span class="chip ${ (staleness(l)||{level:"ok"}).level==="ok" ? "ok" : (staleness(l).level) }">
+        touched ${daysSince(l.lastTouch)}d ago</span>
+    </div>
+    <div class="detail-links">
+      ${l.phone ? `<a href="tel:${esc(l.phone)}">Call</a><a href="sms:${esc(l.phone)}">Text</a>` : ""}
+      ${l.address ? `<a href="${mapsUrl}" target="_blank" rel="noopener">Map</a>` : ""}
+    </div>
+    ${l.notes ? `<div class="card" style="font-size:14px">${esc(l.notes)}</div>` : ""}
+
+    <div class="eyebrow">Move status</div>
+    <div class="frow2">
+      ${next ? `<button class="btn" id="d-advance">→ ${next}</button>` : ""}
+      <select id="d-status" style="flex:1">${PIPELINE.concat(TERMINAL)
+        .map(s => `<option ${s===l.status?"selected":""}>${s}</option>`).join("")}</select>
+    </div>
+
+    <div class="eyebrow">Log a touch</div>
+    <div class="frow2">
+      <select id="d-ttype">${TOUCH_TYPES.map(t=>`<option>${t}</option>`).join("")}</select>
+      <input id="d-tnote" placeholder="note (optional)">
+    </div>
+    <div class="actions"><button class="btn gold" id="d-touch">Log touch</button></div>
+
+    ${l.touches.length ? `<div class="eyebrow">History</div>
+      <ul class="touchlog">${l.touches.slice().reverse().slice(0, 20).map(t =>
+        `<li><b>${t.type}</b>${t.note ? " — " + esc(t.note) : ""}<div class="t-when">${new Date(t.at).toLocaleString()}</div></li>`).join("")}</ul>` : ""}
+
+    <div class="actions">
+      <button class="btn ghost" data-close>Close</button>
+      <button class="btn danger" id="d-delete">Delete</button>
+    </div>`;
+  $("#sheet-detail").classList.add("open");
+
+  const setStatus = (ns) => {
+    if (ns === l.status) return;
+    if (ns === "dead") { const r = prompt("Reason it's dead?"); if (r === null) { renderAll(); openDetail(id); return; } l.deadReason = r; }
+    l.touches.push({ type:"status", note:`${l.status} → ${ns}`, at:Date.now() });
+    l.status = ns; l.lastTouch = Date.now(); save(); renderAll(); openDetail(id);
+  };
+  if (next) $("#d-advance").onclick = () => setStatus(next);
+  $("#d-status").onchange = e => setStatus(e.target.value);
+  $("#d-touch").onclick = () => {
+    l.touches.push({ type:$("#d-ttype").value, note:$("#d-tnote").value.trim(), at:Date.now() });
+    l.lastTouch = Date.now(); save(); renderAll(); toast("Touch logged"); openDetail(id);
+  };
+  $("#d-delete").onclick = () => {
+    if (!confirm(`Delete ${l.name}? This can't be undone.`)) return;
+    db.leads = db.leads.filter(x => x.id !== id); save(); closeSheets(); renderAll(); toast("Lead deleted");
+  };
+}
+
+/* ================= objections ================= */
+const OBJECTIONS = [
+{c:"Price & Deductible",q:"I can't afford my deductible right now",t:"price deductible money afford broke",
+ rf:"They're not saying no — they're revealing their real decision criterion. Shift from cost to timing and consequence.",
+ rs:"I completely understand — and honestly, that's exactly why we should file now rather than later. Your deductible doesn't change whether we do this today or in six months. What does change is that unrepaired hail damage compounds — and if you wait past your carrier's filing window, that deductible becomes the full cost of a new roof. Let's at least get the inspection documented so the clock works for you instead of against you.",
+ ps:"Loss aversion: framing inaction as the costlier path. Deadline scarcity is legitimate — carriers do enforce filing windows. \"The clock works for you\" converts a threat frame into an ally frame."},
+{c:"Price & Deductible",q:"How much is this going to cost me?",t:"price cost money quote estimate",
+ rf:"They're pricing a roof; you're offering a claim. Move from retail cost to what insurance already owes them.",
+ rs:"Great question — if the storm damage qualifies, your out-of-pocket is your deductible, period, and your insurance covers the rest. That's the whole reason I start with a free inspection instead of a sales pitch. If there's no qualifying damage, I'll tell you that too and you've lost nothing but fifteen minutes.",
+ ps:"Anchoring: replace the imagined $15–25k roof price with the deductible number before they lock onto the big figure. The \"no damage, no pitch\" out signals honesty and lowers resistance."},
+{c:"Price & Deductible",q:"Another company said they'd waive my deductible",t:"deductible waive competitor illegal discount",
+ rf:"This is a compliance trap for the homeowner, not a discount. Position yourself as the one protecting them.",
+ rs:"I'm glad you told me that, because you need to know: deductible waiving is insurance fraud in Oklahoma — it's the homeowner who signs the claim paperwork, so it's the homeowner taking the risk. Any contractor willing to commit fraud to win your job will cut corners you can't see from the ground. We do it by the book, and the book still gets you a full roof for the price of your deductible.",
+ ps:"Reframes the competitor's \"advantage\" as a liability transferred onto the homeowner. \"Cut corners you can't see\" links ethics to workmanship."},
+{c:"Price & Deductible",q:"We just don't have it in the budget this year",t:"budget money timing afford next year",
+ rf:"\"Budget\" assumes this is a purchase. Re-classify it as an insurance benefit they already paid for through premiums.",
+ rs:"That's fair — but here's the thing: you've already been budgeting for this roof every month for years. It's called your premium. The storm turned that premium into a benefit you're entitled to claim, and the only budget item is the deductible. Let's find out what you're owed before we talk about what anything costs.",
+ ps:"Sunk-cost leverage flipped positive: premiums become an asset to recover. \"What you're owed\" activates fairness instincts — stronger motivators than savings."},
+{c:"Insurance Skepticism",q:"I don't want my rates to go up",t:"rates premium increase insurance afraid to file",
+ rf:"Separate act-of-God claims from at-fault claims. Their fear is built on the car-insurance model, which doesn't apply.",
+ rs:"Totally reasonable fear — but hail claims don't work like a car wreck. Storm damage is an act of God, so carriers raise rates by ZIP code after a storm, not by who filed. Here's the kicker: your neighbors are filing right now, which means you're likely paying the area increase either way — the only question is whether you get a roof out of it.",
+ ps:"Corrects a false mental model with the true one (territory-rated catastrophe losses). \"Paying the increase either way\" is an inequity frame: not filing subsidizes the neighbors who did."},
+{c:"Insurance Skepticism",q:"I don't want to deal with my insurance company",t:"hassle insurance paperwork adjuster stress",
+ rf:"The dread is administrative, not financial. Sell the concierge, not the claim.",
+ rs:"That's exactly the part I take off your plate. You make one phone call to report the claim — I'll even sit with you while you do it — and from there I handle the documentation, meet the adjuster on your roof, and speak their language so you don't have to. Your total time investment is about twenty minutes.",
+ ps:"Effort discounting: people reject outcomes they want when the process feels heavy. Quantifying the burden collapses an imagined ordeal into a small task."},
+{c:"Insurance Skepticism",q:"My insurance already denied my neighbor's claim",t:"denied neighbor claim carrier no point",
+ rf:"A denial next door is a data point about documentation quality, not about the storm. Differentiate on evidence.",
+ rs:"Do you know who documented your neighbor's roof? That's usually the whole story — a denial mostly means the damage wasn't presented the way adjusters need to see it. When I inspect, I chalk every test square, photograph every soft-metal hit, and hand the adjuster a report they can approve without sticking their neck out. Different evidence, different outcome.",
+ ps:"Attribution shift: moves the cause of denial from \"carrier is stingy\" (unfixable) to \"documentation was thin\" (fixable by you). Process details are credibility markers."},
+{c:"Insurance Skepticism",q:"Won't they just drop me if I file?",t:"dropped cancelled non-renewal afraid policy",
+ rf:"Address the fear with the actual rule, then flip it: the risky move is an unrepaired roof, not a filed claim.",
+ rs:"Oklahoma law doesn't let a carrier non-renew you over a single act-of-God claim — one hail claim is normal business to them. You know what actually gets policies non-renewed? A roof with old, unrepaired storm damage at renewal inspection time. Filing and fixing it is how you stay insurable.",
+ ps:"Neutralizes the feared outcome with a rule-based fact, then re-assigns the fear to the do-nothing path. \"Normal business\" shrinks the claim's perceived audacity."},
+{c:"Spouse Not Home",q:"I need to talk to my wife/husband first",t:"spouse wife husband talk it over decision",
+ rf:"Agree instantly — then convert \"talk it over\" into \"let's get them the facts to talk over,\" which requires the inspection.",
+ rs:"Absolutely — this is a both-of-you decision, and I'd never ask you to make it alone. But here's the thing: right now there's nothing to talk over, because we don't know if there's damage. Let me do the inspection while I'm here, and tonight you two can look at actual photos of your actual roof instead of guessing. What evening are you both home so I can walk you through what I find?",
+ ps:"Rolling with resistance (aikido close). The inspection is input to the spousal conversation, not a bypass. The both-present appointment kills the one-legged close problem."},
+{c:"Spouse Not Home",q:"My husband handles all the house stuff",t:"spouse husband handles it defer",
+ rf:"Don't pitch the non-decider — recruit them as your inside advocate and lock a time with the decider.",
+ rs:"Perfect — then he's exactly who I need to meet. Can you do me one favor? When he gets home, tell him a roofer found hail hits on the gutters — he'll know what that means. I'm back in this neighborhood Thursday; is 6 or 6:30 better for me to catch him?",
+ ps:"Gives the spouse a tiny, zero-commitment messenger task. \"He'll know what that means\" flatters the decider before you've met. Alternative-choice close skips yes/no."},
+{c:"Spouse Not Home",q:"We'll discuss it and call you back",t:"call back discuss think later brush off",
+ rf:"\"We'll call you\" is a polite no. Trade the vague callback for a concrete, low-stakes next step you control.",
+ rs:"Sounds good — and so the conversation's worth having, let me leave you more than a business card. I'll email you the inspection photos and a one-page summary tonight, and I'll swing back Thursday evening to answer whatever questions come up. If the answer's no thanks, you can tell me at the door in ten seconds — deal?",
+ ps:"Replaces their vague commitment with your concrete one. Pre-authorizing an easy \"no\" paradoxically lowers defenses — people resist pressure, not check-ins."},
+{c:"Spouse Not Home",q:"She's not home and I can't sign anything without her",t:"spouse not home sign can't commit alone",
+ rf:"Perfect — nothing today requires a signature. Decouple the free inspection from the commitment and bank the progress.",
+ rs:"Good news — there's nothing to sign today. The inspection is free and the photos belong to you either way; all I need is permission to set my ladder up. Then when you're both home I'll walk you through the findings together, and any decisions get made with both names on the paperwork.",
+ ps:"Foot-in-the-door: ladder permission is a micro-yes that builds momentum without triggering the big-decision alarm. Both-spouse paperwork signals respect for their process."},
+{c:"Already Have A Guy",q:"We already have a roofer we use",t:"roofer already have loyal our guy contractor",
+ rf:"Never attack \"their guy\" — attack the job type. Repair roofers and insurance-claim specialists are different trades.",
+ rs:"That's great — hold onto him, good roofers are gold. Quick question though: is he a repair roofer or an insurance-claim guy? Meeting adjusters, documenting test squares, fighting supplements — that's a different trade, and it's all I do. Get my free inspection and my documentation, and you can even hand it to your guy — you'll just know what the claim is actually worth first.",
+ ps:"Sidesteps loyalty by re-segmenting the market so \"your guy\" and you aren't competitors. The give-away offer is a costly signal of confidence that usually earns the whole job."},
+{c:"Already Have A Guy",q:"My brother-in-law does roofing",t:"family brother-in-law relative friend cheap",
+ rf:"Family does labor; you do the claim. Position yourself upstream of the swing-a-hammer decision.",
+ rs:"Even better — free labor is unbeatable, and I'm not here to compete with family. But before anybody climbs up there, you want the insurance claim scoped and approved, because whatever the carrier misses comes out of your pocket — or his. Let me handle the adjuster and maximize the scope, and who installs the shingles afterward is entirely your family's call.",
+ ps:"Removes the either/or frame that makes them defensive of family. \"Out of your pocket — or his\" introduces risk without criticizing anyone."},
+{c:"Already Have A Guy",q:"We got three bids already",t:"bids quotes shopping comparing estimate",
+ rf:"Bids are for cash jobs. On an insurance claim, the scope — not the bid — decides everything, so compete on scope.",
+ rs:"Smart — always get bids. But can I ask: bids against what scope? On an insurance job the carrier's scope sheet decides what gets paid, and three bids on an incomplete scope are three prices for the wrong roof. I'll review your adjuster's scope for free — if items are missing, and they usually are, that's thousands back to you no matter who you hire.",
+ ps:"Reframes their diligence as incomplete rather than wrong, preserving ego while creating doubt. Free scope review positions you as expert auditor, last-in — the strongest bid-war position."},
+{c:"Already Have A Guy",q:"The company that did our roof ten years ago will handle it",t:"previous roofer warranty original installer loyal",
+ rf:"Their loyalty assumes the old company still exists, still does storm work, and will show up. Test the assumption gently.",
+ rs:"That's the right instinct — start with who you trust. Two quick things to check when you call them: are they still doing insurance restoration, and can they meet your adjuster on the roof? A lot of install crews don't touch claims. If they hesitate on either question, keep my card — the inspection and adjuster meeting are free, and your old roofer can still do the install.",
+ ps:"Plants diagnostic questions their current option will likely fail, letting the homeowner discover the gap (self-persuasion). You exit as the helpful backstop."},
+{c:"Storm Chaser Distrust",q:"You're just a storm chaser — you'll be gone in six months",t:"storm chaser out of state fly by night gone distrust",
+ rf:"Don't argue the label — out-prove it. Local proof beats verbal reassurance every time.",
+ rs:"Fair concern — after every storm this town fills up with out-of-state tailgates, and you should be suspicious of every one of them. Here's my Oklahoma contractor registration, our office is local, and I can text you three homeowners within a mile of here we roofed over a year ago — call any of them tonight. Judge us by who vouches for us, not by who knocked.",
+ ps:"Agreeing with the underlying fear builds instant credibility. Verifiable local proof is costly signaling a fly-by-night can't fake; neighbor references are social proof at its most potent range."},
+{c:"Storm Chaser Distrust",q:"I've heard about roofers taking deposits and disappearing",t:"scam deposit disappear fraud stolen money",
+ rf:"Their fear is losing money upfront. Kill it structurally: align your payment schedule with their protection.",
+ rs:"You've heard right — it happens after every storm, and it makes my job harder too. So here's how we take that risk off the table: you pay nothing out of pocket until material is delivered to your driveway, and the final payment only moves when the work passes your walkthrough. The money follows the roof, not the other way around.",
+ ps:"Structural reassurance beats verbal: changing when money moves removes the scam mechanism entirely. \"The money follows the roof\" is a portable phrase that wins the kitchen-table debate."},
+{c:"Storm Chaser Distrust",q:"Why are you knocking doors if you're a legit company?",t:"door to door knocking salesman legit why here",
+ rf:"Own the channel proudly. Canvassing after a storm is how legitimate restoration works, because damage is invisible from the ground.",
+ rs:"Honest answer? Because hail damage doesn't leak for two or three years, so nobody calls a roofer — they find out when the ceiling stains, after the filing window closed. After a confirmed storm we walk the affected streets because that's when an inspection can still get you a full roof instead of a denied claim. Knocking is the early-warning system.",
+ ps:"Answers the meta-objection with a verifiable mechanism: hail damage is latent, filing windows are real. \"Early-warning system\" flips the salesman frame to a service frame."},
+{c:"Storm Chaser Distrust",q:"How do I know your work is any good?",t:"quality workmanship proof reviews warranty",
+ rf:"Don't claim quality — hand them the ways to verify it and the recourse if you're wrong.",
+ rs:"Don't take my word for it — that's what the internet is for. Scan this card: our reviews, our license, and photos of local jobs are all one tap away. And when we do your roof, you get the manufacturer's warranty on the shingles plus our workmanship warranty in writing — if I'm wrong about our quality, you have it on paper that it's my problem, not yours.",
+ ps:"Third-party verification removes the \"salesman says so\" discount. The written warranty converts an unfalsifiable promise into an enforceable one."},
+{c:"No Damage Denial",q:"Our roof is fine — it's not leaking",t:"no damage fine not leaking no problem roof is good",
+ rf:"Leaks are the last symptom, not the first. Move their test for damage from \"water in the house\" to \"granules and bruising.\"",
+ rs:"That's the tricky part about hail — a bruised shingle doesn't leak this year, it leaks in year three, long after your claim window closed. The damage that totals a roof is granule loss you can only see up close. Your gutters and downspouts will tell us in five minutes: if the soft metals took hits, the shingles did too.",
+ ps:"Replaces their damage heuristic (leak = damage) with the correct one (impact = damage, leak = late symptom) — educating, not contradicting. The gutter check is a tiny, verifiable commitment."},
+{c:"No Damage Denial",q:"The storm wasn't that bad here",t:"storm not bad small hail missed us weather",
+ rf:"Their evidence is what they saw from the window. Counter with data and the neighborhood pattern, not opinion.",
+ rs:"From the ground it never looks bad — but the weather service logged inch-and-a-quarter hail on this square mile, and I've marked damage on four roofs on this street this week. Hail falls in swaths, so your neighbor can get hammered while you get grazed — which is exactly why a free fifteen-minute look beats guessing.",
+ ps:"Third-party data plus local social proof outweighs a memory of the storm. \"Swaths\" gives them a face-saving way to be wrong."},
+{c:"No Damage Denial",q:"We just had the roof replaced two years ago",t:"new roof replaced recent two years brand new",
+ rf:"New roofs get hailed on too — and a damaged new roof is a bigger stake, not a smaller one.",
+ rs:"Even more reason to check it — hail doesn't card your roof for its age, and a two-year-old roof with bruising is a fifteen-year roof that fails in eight. Worse, undocumented storm damage can void your manufacturer warranty, because they'll blame the hail instead of their shingle. Fifteen minutes protects a brand-new investment; that's the best inspection math there is.",
+ ps:"Judo move: their reason for complacency becomes the reason for urgency. Protecting a recent purchase triggers loss aversion harder than improving an old one."},
+{c:"No Damage Denial",q:"Someone already looked at it and said it's fine",t:"already inspected second opinion another roofer said fine",
+ rf:"An inspection is only as good as its documentation. Ask what evidence they were shown — usually none.",
+ rs:"Good — I'm glad somebody's looked. Quick question: did they leave you photos, or chalk any test squares, or check the soft metals — or was it a walk-around and a thumbs up? A real inspection produces evidence you can hold. I'll put my findings in writing with photos either way — if I agree it's clean, you've got a documented baseline for the next storm, free.",
+ ps:"Never attack the other inspector — raise the standard of proof until their inspection falls short on its own. The \"clean baseline\" framing means you win even by finding nothing."},
+{c:"Bad Timing",q:"This isn't a good time — we're in the middle of dinner",t:"dinner busy bad time interrupting now",
+ rf:"Respect the moment instantly and trade it for a scheduled one. The win is the appointment, not the conversation.",
+ rs:"My apologies — go eat, I'll be quick. I'm inspecting storm damage on this street all week; your neighbors at the corner just had theirs done. I'll come back tomorrow — is right after work better, or Saturday morning?",
+ ps:"Immediate deference earns more goodwill than any pitch — you become \"the polite one.\" The alternative-choice close converts an exit into an appointment in one breath."},
+{c:"Bad Timing",q:"We're about to leave / heading out the door",t:"leaving no time rushed on our way out quick",
+ rf:"Perfect situation — the roof doesn't need them home. Decouple the inspection from their presence.",
+ rs:"Then I'll be fast — here's the good news: you don't even need to be here. Give me the okay and I'll inspect while you're out, leave a written summary with photos at the door, and there's zero obligation either way. You come home to answers instead of a follow-up knock.",
+ ps:"Removes 100% of the time cost, which was the entire objection. \"Answers instead of a follow-up knock\" monetizes the annoyance."},
+{c:"Bad Timing",q:"Come back after the holidays",t:"holidays later season busy time postpone",
+ rf:"Their calendar concern is real, but the claim clock doesn't pause. Split the inspection (now) from the project (later).",
+ rs:"Happy to work around the holidays — the build can absolutely wait until January. But the claim can't always wait, because carriers measure the filing window from the storm date, not from when it's convenient. Let's get the inspection and paperwork done this week — twenty minutes — and then nothing else touches your calendar until the new year.",
+ ps:"Splitting the ask lets them keep their holiday boundary while you keep the deal alive — both sides win. The filing-window deadline supplies urgency a callback date never survives."},
+{c:"Bad Timing",q:"Just leave a card and I'll call you",t:"leave a card call you brush off later maybe",
+ rf:"Cards go in drawers; commitments go on calendars. Accept the card request and attach one concrete anchor to it.",
+ rs:"Absolutely — card's yours. And look, I know how cards work: it goes in the junk drawer and life happens, no offense taken. So let me earn the callback instead — I'm doing inspections on this street Thursday anyway; if I knock at 5:30 and you've got fifteen minutes, great, and if not, wave me off and I'm gone.",
+ ps:"Naming the junk-drawer reality is disarming honesty. The Thursday knock converts a dead-end into a scheduled second touch with a pre-authorized, zero-guilt exit."},
+{c:"Adjuster Pushback",q:"I'm only seeing seven hits per square — below repair threshold",t:"adjuster hits per square threshold repair count",
+ rf:"Don't argue the count — expand the evidence. More test squares, more slopes, plus collateral damage.",
+ rs:"Fair count on that square — let's chalk two more on this slope, because hail density isn't uniform and one square isn't a sample. And before we settle on repair, look at the soft metals: the downspouts and AC fins took hits at a density that doesn't match a seven-per-square storm. If the collateral says heavy impact, the shingle count deserves a second sample.",
+ ps:"Conceding the first data point buys standing to demand a bigger sample — you're arguing methodology, not honesty. You're handing the adjuster the paper trail their approval needs."},
+{c:"Adjuster Pushback",q:"That's mechanical damage, not hail",t:"adjuster mechanical damage wear denial cause",
+ rf:"Causation disputes are won with pattern evidence: randomness, directionality, matching collateral — not louder opinions.",
+ rs:"Let's test that against the pattern — mechanical damage tracks foot traffic and tool paths, but these bruises are randomly distributed across the whole slope, including areas nobody walks. They're also concentrated on the storm-facing exposure, and they match the dents on the gutters, which nobody hit with a hammer. Random distribution, directional bias, matching collateral — that's a hail signature, and I'd like it noted in the file.",
+ ps:"You're providing the three-factor argument the adjuster's own training uses — agreement feels like applying their standards. \"Noted in the file\" raises the cost of a soft denial without confrontation."},
+{c:"Adjuster Pushback",q:"We'll pay for repairs, not replacement",t:"adjuster repair only partial replace brittle",
+ rf:"Shift from \"how many shingles are damaged\" to \"can this roof actually be repaired without making it worse.\"",
+ rs:"Then let's do a repairability test together, because a repair scope assumes these shingles can survive one. Watch what happens when I lift this tab — the mat's brittle and the seal strip tears out granules, so every 'repair' creates two new damaged shingles. The manufacturer's own guidelines call this condition non-repairable, and I'll get you that bulletin for the file.",
+ ps:"A live demonstration beats any verbal argument — the shingle cracking in their sight line can't be unseen. Manufacturer guidelines convert \"the contractor wants more\" into \"the manufacturer requires it.\""},
+{c:"Adjuster Pushback",q:"The carrier won't pay for code items like drip edge",t:"adjuster code items drip edge ordinance supplement",
+ rf:"Code compliance isn't a wish-list item — it's an ordinance-and-law coverage question. Ask about the endorsement, then document.",
+ rs:"Understood — can we confirm whether the policy carries ordinance-and-law coverage before we strike it? Drip edge is IRC code here, the city enforces it at permit, and the roof can't pass final inspection without it. If it's code-required to complete the repair, it belongs in the scope — and I'll send the code citation with photos so it's an easy supplement approval.",
+ ps:"Framing it as coverage verification keeps the adjuster in problem-solving mode. Pre-packaging the citation lowers their effort to approve — effort, not generosity, is the real barrier."}
+];
+
+const CARRIERS = [
+["State Farm",
+ ["Frequently disputes hail size vs. NOAA reports — bring impact photos with a coin or gauge for scale",
+  "Pushes repair-over-replace on slopes with <8 hits per square",
+  "May argue mechanical damage on wind-creased shingles"],
+ ["Document 10x10 test squares on EVERY slope, chalk-circle each impact",
+  "Photograph soft metal damage first — it corroborates hail size independently",
+  "Cite manufacturer repairability guidelines for brittle/aged shingles"]],
+["Allstate",
+ ["Leans on repair scopes for scattered damage; slow to concede full slope replacement",
+  "Desk reviewers may cut code items (drip edge, ice & water) from the field scope",
+  "Depreciation holdbacks can be aggressive on older roofs"],
+ ["Chalk and photograph every impact so 'scattered' reads as 'systemic' in the file",
+  "Attach the local code citation for every code item in the supplement",
+  "Confirm RCV vs ACV language before the meeting and note recoverable depreciation"]],
+["Farmers",
+ ["Often schedules ladder-assist or third-party inspectors instead of staff adjusters",
+  "May classify hail bruising as blistering or manufacturing defect",
+  "Partial approvals (one slope) are common on directional storms"],
+ ["Meet every inspection in person — never let a ladder-assist walk the roof alone",
+  "Break a bruise open on video: fractured mat proves impact, blisters have no bruise",
+  "Document collateral on ALL elevations to argue multi-directional impact"]],
+["USAA",
+ ["Generally fair but documentation-heavy — thin files get thin scopes",
+  "May route supplements through desk review with long turnaround",
+  "Questions matching/discontinued shingle claims without an ITEL report"],
+ ["Over-document: full photo report, test squares, and measurements in the first submission",
+  "Submit supplements complete-in-one — piecemeal supplements stall in desk review",
+  "Order the ITEL match report early when shingles look discontinued"]],
+["Travelers",
+ ["Known to dispatch engineer reports to dispute causation on borderline roofs",
+  "May deny wind creases as thermal cracking or foot traffic",
+  "Scope tends to omit steep/high charges and tear-off quantities"],
+ ["If an engineer is dispatched, be present and photograph everything they photograph",
+  "Document crease directionality matching the storm wind vector (NOAA event data)",
+  "Verify pitch, layers, and access in your own measurements before their scope lands"]],
+["Liberty Mutual",
+ ["Slow claim cycle times — momentum dies between touches",
+  "Prefers repair estimates from preferred-vendor programs",
+  "May apply betterment/wear arguments to soft metals"],
+ ["Calendar a follow-up touch every 3 business days; confirm every call in writing",
+  "Remind the homeowner they choose the contractor — vendor programs are optional",
+  "Photograph soft metals with scale reference; dents are impact, not wear"]]
+];
+
+let objCat = null;
+function objScore(query, o) {
+  const q = query.toLowerCase().trim(); if (!q) return 1;
+  const hay = (o.q + " " + o.t).toLowerCase(), body = (o.rf + " " + o.rs + " " + o.ps).toLowerCase();
+  let s = 0;
+  for (const w of q.split(/\s+/)) {
+    if (hay.includes(w)) { s += 3; continue; }
+    // typo tolerance: match on 4-char prefixes ("deductable" hits "deductible")
+    if (w.length >= 4 && new RegExp("\\b" + w.slice(0, 4)).test(hay)) { s += 2; continue; }
+    if (body.includes(w)) s += 1;
+  }
+  return s;
+}
+function renderObjCats() {
+  const cats = [...new Set(OBJECTIONS.map(o => o.c))];
+  $("#obj-cats").innerHTML = [`<button data-cat="" class="${objCat?"":"on"}">All</button>`,
+    ...cats.map(c => `<button data-cat="${esc(c)}" class="${objCat===c?"on":""}">${esc(c)}</button>`)].join("");
+}
+function renderObjections() {
+  renderObjCats();
+  const q = $("#obj-search").value;
+  let list = OBJECTIONS.map((o, i) => ({ o, i, s: objScore(q, o) })).filter(x => x.s > 0);
+  if (objCat) list = list.filter(x => x.o.c === objCat);
+  if (q.trim()) list.sort((a,b) => b.s - a.s);
+  $("#obj-list").innerHTML = list.length ? list.map(({o, i}) =>
+    `<div class="card obj-card" data-obj="${i}">
+       <button style="display:block;width:100%;text-align:left">
+         <div class="obj-q">&ldquo;${esc(o.q)}&rdquo;</div>
+         <div class="obj-cat">${esc(o.c)}</div>
+       </button>
+       <div class="obj-body">
+         <div class="obj-sec rf">The reframe</div><p>${esc(o.rf)}</p>
+         <div class="obj-sec rs">Say this</div><p class="say">&ldquo;${esc(o.rs)}&rdquo;</p>
+         <div class="obj-sec ps">Why it works</div><p>${esc(o.ps)}</p>
+       </div>
+     </div>`).join("")
+    : `<div class="empty"><b>No match</b>Try fewer words.</div>`;
+}
+
+/* quiz */
+function openQuiz() {
+  const o = OBJECTIONS[Math.floor(Math.random() * OBJECTIONS.length)];
+  $("#quiz-body").innerHTML = `
+    <div class="eyebrow" style="text-align:center">Say your answer out loud first</div>
+    <div class="q">&ldquo;${esc(o.q)}&rdquo;</div>
+    <button class="btn gold" id="quiz-reveal">Reveal the response</button>
+    <div id="quiz-answer" hidden style="text-align:left;margin-top:16px">
+      <div class="obj-sec rs" style="color:var(--gold-ink)">Say this</div>
+      <p class="say" style="background:var(--navy-soft);border-radius:10px;padding:10px 12px;font-size:14.5px">&ldquo;${esc(o.rs)}&rdquo;</p>
+      <div class="obj-sec ps" style="color:var(--muted)">Why it works</div>
+      <p style="font-size:14px">${esc(o.ps)}</p>
+    </div>
+    <div class="actions" style="display:flex;gap:10px;margin-top:16px">
+      <button class="btn ghost" data-close style="flex:1">Done</button>
+      <button class="btn" id="quiz-next" style="flex:1">Next one</button>
+    </div>`;
+  $("#sheet-quiz").classList.add("open");
+  $("#quiz-reveal").onclick = e => { $("#quiz-answer").hidden = false; e.target.hidden = true; };
+  $("#quiz-next").onclick = openQuiz;
+}
+
+/* ================= intel ================= */
+function renderIntel() {
+  $("#intel-list").innerHTML = CARRIERS.map(([name, pb, cs], i) => {
+    const notes = db.intelNotes[name] || [];
+    return `<div class="card">
+      <div class="lead-name">${esc(name)}</div>
+      <div class="intel-cols">
+        <h4 class="pb">Their likely pushback</h4><ul>${pb.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>
+        <h4 class="cs">My counters</h4><ul>${cs.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>
+        ${notes.length ? `<h4 style="color:var(--gold-ink)">My field notes</h4><ul>${notes.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>` : ""}
+      </div>
+      <div class="actions" style="display:flex;margin-top:12px">
+        <button class="btn ghost" data-learn="${esc(name)}" style="flex:1">+ Add field note</button>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+/* ================= backup / restore ================= */
+function exportData() {
+  const blob = new Blob([JSON.stringify(db, null, 2)], { type:"application/json" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "aqe-field-backup-" + new Date().toISOString().slice(0,10) + ".json";
+  a.click(); URL.revokeObjectURL(a.href);
+  toast("Backup downloaded");
+}
+function importData(file) {
+  const r = new FileReader();
+  r.onload = () => {
+    try {
+      const data = JSON.parse(r.result);
+      if (!Array.isArray(data.leads)) throw new Error("bad file");
+      if (!confirm(`Replace current data with backup (${data.leads.length} leads)?`)) return;
+      db = Object.assign({ leads:[], intelNotes:{}, seq:1 }, data);
+      save(); renderAll(); toast("Backup restored");
+    } catch (e) { toast("That file isn't an AQE backup"); }
+  };
+  r.readAsText(file);
+}
+
+/* ================= wiring ================= */
+function closeSheets() { $$(".sheet-wrap").forEach(s => s.classList.remove("open")); }
+function renderAll() { renderLeads(); renderFollowups(); renderIntel(); }
+
+document.addEventListener("click", e => {
+  const t = e.target.closest("[data-tab],[data-close],[data-lead],[data-pf],[data-cat],[data-learn],.obj-card button");
+  if (!t) return;
+  if (t.dataset.tab !== undefined) {
+    $$(".tabbar button").forEach(b => b.classList.toggle("on", b === t));
+    $$(".view").forEach(v => v.classList.toggle("active", v.id === "view-" + t.dataset.tab));
+    $("#fab").style.display = t.dataset.tab === "leads" ? "" : "none";
+    return;
+  }
+  if (t.dataset.close !== undefined) { closeSheets(); return; }
+  if (t.dataset.lead) { openDetail(Number(t.dataset.lead)); return; }
+  if (t.dataset.pf !== undefined) { pipeFilter = t.dataset.pf || null; renderLeads(); return; }
+  if (t.dataset.cat !== undefined) { objCat = t.dataset.cat || null; renderObjections(); return; }
+  if (t.dataset.learn) {
+    const note = prompt(`New field note for ${t.dataset.learn}:`);
+    if (note && note.trim()) {
+      (db.intelNotes[t.dataset.learn] = db.intelNotes[t.dataset.learn] || []).push(note.trim());
+      save(); renderIntel(); toast("Noted — it compounds");
+    }
+    return;
+  }
+  const objCard = t.closest(".obj-card");
+  if (objCard) objCard.classList.toggle("obj-open");
+});
+
+$("#fab").onclick = () => { $$("#sheet-add input, #sheet-add textarea").forEach(i => i.value = "");
+  $("#sheet-add").classList.add("open"); setTimeout(() => $("#f-name").focus(), 60); };
+$("#btn-save-lead").onclick = () => {
+  const name = $("#f-name").value.trim();
+  if (!name) { toast("Name is required"); return; }
+  const norm = s => s.toLowerCase().replace(/\s+/g, " ");
+  const dupe = db.leads.find(l => norm(l.name) === norm(name) &&
+    norm(l.address||"") === norm($("#f-address").value.trim()));
+  if (dupe && !confirm(`Looks like a duplicate of ${dupe.name}. Add anyway?`)) return;
+  db.leads.push({
+    id: db.seq++, name,
+    address: $("#f-address").value.trim(), phone: $("#f-phone").value.trim(),
+    carrier: $("#f-carrier").value.trim(), source: $("#f-source").value,
+    value: Number($("#f-value").value) || null, notes: $("#f-notes").value.trim(),
+    status: "knocked", created: Date.now(), lastTouch: Date.now(),
+    touches: [{ type:"door", note:"initial knock", at:Date.now() }],
+  });
+  save(); closeSheets(); renderAll(); toast("Lead saved — status: knocked");
+};
+
+$("#lead-search").addEventListener("input", renderLeads);
+$("#obj-search").addEventListener("input", renderObjections);
+$("#btn-quiz").onclick = openQuiz;
+$("#btn-export").onclick = exportData;
+$("#btn-import").onclick = () => $("#import-file").click();
+$("#import-file").onchange = e => { if (e.target.files[0]) importData(e.target.files[0]); e.target.value = ""; };
+
+renderAll(); renderObjections();
+</script>
