@@ -1,0 +1,32 @@
+# XcodeGen manifest — run `xcodegen generate` in this directory, then open AQEField.xcodeproj.
+name: AQEField
+options:
+  bundleIdPrefix: com.aqe
+  deploymentTarget:
+    iOS: "17.0"
+  createIntermediateGroups: true
+settings:
+  base:
+    SWIFT_VERSION: "5.9"
+    MARKETING_VERSION: "0.1.0"
+    CURRENT_PROJECT_VERSION: "1"
+targets:
+  AQEField:
+    type: application
+    platform: iOS
+    sources: [AQEField]
+    info:
+      path: AQEField/Info.plist
+      properties:
+        CFBundleDisplayName: AQE Field
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
+        NSLocationWhenInUseUsageDescription: >-
+          AQE Field tags every knock with GPS so your map, reports, and
+          neighborhood stats stay accurate.
+        ITSAppUsesNonExemptEncryption: false
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.aqe.field
+        TARGETED_DEVICE_FAMILY: "1"
+        INFOPLIST_KEY_UIUserInterfaceStyle: Light
