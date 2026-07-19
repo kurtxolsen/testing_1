@@ -3,12 +3,20 @@
 Field operating system for a roofing consultant walking neighborhoods.
 Not a CRM: one-handed, one-tap, readable in bright sunlight.
 
-**Phase 1 (this build):** navigation, dashboard command center, one-tap knock
-workflow, live goal rings, working map pins, minimal-typing lead capture,
-follow-up queue, offline-first local persistence.
+**Phase 1:** navigation, dashboard command center, one-tap knock workflow,
+live goal rings, working map pins, minimal-typing lead capture, follow-up
+queue, offline-first local persistence.
 
-Planned next: Phase 2 Field Bible · Phase 3 neighborhood intelligence ·
-Phase 4 team + deep analytics (Supabase sync hooks in behind `AppStore`).
+**Phase 2 (this build):** the AQE Field Bible — a searchable, fully offline
+knowledge base bundled into the app (scripts, objection handling ported from
+`obj/`, insurance explanations, carrier intel ported from `adjprep/`, GAF
+system + warranties, roof anatomy, damage ID, sales psychology, Never Split
+the Difference notes, follow-up SOP). Reachable from the Dashboard quick
+action and the More tab. Add/edit articles by dropping markdown files into
+`AQEField/Resources/FieldBible/` and listing them in `manifest.json`.
+
+Planned next: Phase 3 neighborhood intelligence · Phase 4 team + deep
+analytics (Supabase sync hooks in behind `AppStore`).
 
 ## Build & run (on your Mac)
 
@@ -40,8 +48,11 @@ AQEField/
 ├── Services/    AppStore (offline-first JSON persistence)
 │                LocationService (GPS + reverse geocode)
 │                WeatherService (Open-Meteo, no API key)
+│                BibleStore (bundled Field Bible loader + search)
+├── Resources/   FieldBible/ — manifest.json + markdown articles
 └── Views/       Dashboard (stat cards, goal rings) · Knock · Map ·
-                 Lead sheet · Reports (follow-ups, 7-day trend) · More
+                 Lead sheet · Reports (follow-ups, 7-day trend) ·
+                 Bible (search, categories, article reader) · More
 ```
 
 - Every knock outcome tap auto-captures timestamp + GPS + street address and

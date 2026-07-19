@@ -26,14 +26,21 @@ struct MoreView: View {
                             .frame(width: 110)
                     }
                 }
+                Section("Library") {
+                    NavigationLink {
+                        FieldBibleContentView()
+                    } label: {
+                        Label("Field Bible", systemImage: "book.fill")
+                            .font(.headline)
+                    }
+                }
                 Section("Coming Soon") {
-                    comingSoon("Field Bible", icon: "book.fill", phase: "Phase 2")
                     comingSoon("Neighborhood Intel", icon: "house.and.flag.fill", phase: "Phase 3")
                     comingSoon("Team & Leaderboard", icon: "person.3.fill", phase: "Phase 4")
                     comingSoon("Digital Card", icon: "person.crop.rectangle.fill", phase: "Phase 4")
                 }
                 Section {
-                    LabeledContent("Version", value: "0.1.0 · Phase 1")
+                    LabeledContent("Version", value: "0.2.0 · Phase 2")
                 }
             }
             .navigationTitle("More")

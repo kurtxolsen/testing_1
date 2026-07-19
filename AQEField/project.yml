@@ -14,7 +14,12 @@ targets:
   AQEField:
     type: application
     platform: iOS
-    sources: [AQEField]
+    sources:
+      - path: AQEField
+        excludes:
+          - "Resources/**"
+      - path: AQEField/Resources
+        buildPhase: resources
     info:
       path: AQEField/Info.plist
       properties:
