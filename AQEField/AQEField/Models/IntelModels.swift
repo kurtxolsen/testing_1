@@ -64,6 +64,31 @@ struct TrailPoint: Codable, Hashable {
     }
 }
 
+// MARK: - Rep profile (digital card)
+
+/// The consultant's own contact card — feeds the QR code and vCard share.
+struct RepProfile: Codable, Equatable {
+    var name = "Kurt Olsen"
+    var title = "Roofing Consultant"
+    var company = "American Quality Exteriors"
+    var phone = ""
+    var email = ""
+    var website = ""
+
+    /// RFC 6350 vCard — what the QR encodes and the share sheet sends.
+    var vCard: String {
+        var lines = ["BEGIN:VCARD", "VERSION:3.0"]
+        lines.append("FN:\(name)")
+        lines.append("ORG:\(company)")
+        lines.append("TITLE:\(title)")
+        if !phone.isEmpty { lines.append("TEL;TYPE=CELL:\(phone)") }
+        if !email.isEmpty { lines.append("EMAIL:\(email)") }
+        if !website.isEmpty { lines.append("URL:\(website)") }
+        lines.append("END:VCARD")
+        return lines.joined(separator: "\n")
+    }
+}
+
 // MARK: - House roll-up (derived, not persisted)
 
 /// One card in Neighborhood Mode: an address plus everything known about it.
