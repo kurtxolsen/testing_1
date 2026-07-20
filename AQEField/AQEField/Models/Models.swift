@@ -87,6 +87,7 @@ struct Lead: Codable, Identifiable, Hashable {
     var latitude: Double?
     var longitude: Double?
     var weatherAtCreation: String?
+    var stormEvent: String?
     var followUpDate: Date?
 }
 

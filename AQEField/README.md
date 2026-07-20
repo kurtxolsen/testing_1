@@ -15,8 +15,17 @@ the Difference notes, follow-up SOP). Reachable from the Dashboard quick
 action and the More tab. Add/edit articles by dropping markdown files into
 `AQEField/Resources/FieldBible/` and listing them in `manifest.json`.
 
-Planned next: Phase 3 neighborhood intelligence · Phase 4 team + deep
-analytics (Supabase sync hooks in behind `AppStore`).
+**Phase 3 (this build):** neighborhood intelligence — Neighborhood Mode
+(swipe left/right between houses with one-tap outcomes and a full intel
+card), per-house Property Intel (value estimate, roof age, last hail date,
+permit history, insurance notes — hand-entered now, provider-slotted for
+Zillow/permit/NOAA APIs later), a Storm Log whose newest storm auto-tags
+new leads and draws a radius overlay on the map, a GPS breadcrumb trail
+recorder, and a heat view layer. Map gains a layers menu (trail / storm /
+heat) and a Neighborhood Mode launcher.
+
+Planned next: Phase 4 team + deep analytics (Supabase sync hooks in behind
+`AppStore`).
 
 ## Build & run (on your Mac)
 
@@ -50,8 +59,9 @@ AQEField/
 │                WeatherService (Open-Meteo, no API key)
 │                BibleStore (bundled Field Bible loader + search)
 ├── Resources/   FieldBible/ — manifest.json + markdown articles
-└── Views/       Dashboard (stat cards, goal rings) · Knock · Map ·
-                 Lead sheet · Reports (follow-ups, 7-day trend) ·
+└── Views/       Dashboard (stat cards, goal rings) · Knock · Map (pins,
+                 trail, storm & heat layers) · Neighborhood (swipe cards,
+                 intel editor, storm log) · Lead sheet · Reports ·
                  Bible (search, categories, article reader) · More
 ```
 
