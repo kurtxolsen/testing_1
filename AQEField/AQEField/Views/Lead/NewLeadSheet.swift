@@ -35,6 +35,9 @@ struct NewLeadSheet: View {
                     if location.lastCoordinate != nil {
                         LabeledContent("GPS", value: "Captured ✓")
                     }
+                    if let storm = store.latestStorm {
+                        LabeledContent("Storm", value: storm.name.isEmpty ? storm.summary : storm.name)
+                    }
                 }
                 Section("Follow-up") {
                     Toggle("Schedule follow-up", isOn: $wantsFollowUp)
@@ -74,6 +77,7 @@ struct NewLeadSheet: View {
         lead.latitude = location.lastCoordinate?.latitude
         lead.longitude = location.lastCoordinate?.longitude
         lead.weatherAtCreation = weather.summary
+        lead.stormEvent = store.latestStorm.map { $0.name.isEmpty ? $0.summary : $0.name }
         lead.followUpDate = wantsFollowUp ? followUpDate : nil
         store.addLead(lead)
         // A saved lead is also a logged door — keeps stats honest with one tap.

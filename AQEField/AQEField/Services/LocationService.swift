@@ -8,6 +8,11 @@ final class LocationService: NSObject, CLLocationManagerDelegate {
     var lastCoordinate: CLLocationCoordinate2D?
     var lastAddress: String?
 
+    /// When true, every fix is forwarded to `onTrailFix` (the breadcrumb
+    /// recorder wired up in the app root).
+    var isTrackingTrail = false
+    var onTrailFix: ((CLLocationCoordinate2D) -> Void)?
+
     private let manager = CLLocationManager()
     private let geocoder = CLGeocoder()
 
@@ -25,6 +30,7 @@ final class LocationService: NSObject, CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         guard let location = locations.last else { return }
         lastCoordinate = location.coordinate
+        if isTrackingTrail { onTrailFix?(location.coordinate) }
         reverseGeocode(location)
     }
 

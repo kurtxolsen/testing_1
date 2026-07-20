@@ -15,6 +15,9 @@ struct AQEFieldApp: App {
                 .tint(AQETheme.coral)
                 .task {
                     location.requestPermission()
+                    location.onTrailFix = { [weak store] coordinate in
+                        store?.recordTrailPoint(coordinate)
+                    }
                     await weather.refresh(coordinate: location.lastCoordinate)
                 }
         }
