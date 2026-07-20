@@ -13,6 +13,7 @@ final class AppStore {
     var intel: [PropertyIntel] = [] { didSet { save() } }
     var storms: [StormEvent] = [] { didSet { save() } }
     var trail: [TrailPoint] = [] { didSet { save() } }
+    var profile = RepProfile() { didSet { save() } }
 
     private let fileURL: URL
 
@@ -171,6 +172,106 @@ final class AppStore {
                                 longitude: coordinate.longitude))
     }
 
+    // MARK: - Analytics
+
+    /// "123 Main St" → "Main St": strip the leading house number so knocks
+    /// group by street.
+    static func streetName(from address: String) -> String {
+        let trimmed = address.trimmingCharacters(in: .whitespaces)
+        let parts = trimmed.split(separator: " ")
+        guard parts.count > 1, parts[0].allSatisfy({ $0.isNumber || $0 == "-" }) else {
+            return trimmed
+        }
+        return parts.dropFirst().joined(separator: " ")
+    }
+
+    struct FunnelStats {
+        var knocks = 0, conversations = 0, leads = 0, inspections = 0, signed = 0
+
+        var knocksPerLead: Double? {
+            leads > 0 ? Double(knocks) / Double(leads) : nil
+        }
+        var conversationRate: Double {
+            knocks > 0 ? Double(conversations) / Double(knocks) : 0
+        }
+        var closeRate: Double {
+            conversations > 0 ? Double(signed) / Double(conversations) : 0
+        }
+    }
+
+    var allTimeFunnel: FunnelStats {
+        var stats = FunnelStats()
+        for event in events {
+            stats.knocks += 1
+            if event.outcome.isConversation { stats.conversations += 1 }
+            switch event.outcome {
+            case .lead: stats.leads += 1
+            case .inspectionSet, .inspectionCompleted: stats.inspections += 1
+            case .contractSigned: stats.signed += 1
+            default: break
+            }
+        }
+        return stats
+    }
+
+    struct HourPerformance: Identifiable {
+        let hour: Int          // 0-23
+        let knocks: Int
+        let conversations: Int
+        var id: Int { hour }
+        var rate: Double { knocks > 0 ? Double(conversations) / Double(knocks) : 0 }
+        var label: String {
+            let formatter = DateFormatter()
+            formatter.dateFormat = "ha"
+            let date = Calendar.current.date(bySettingHour: hour, minute: 0, second: 0, of: Date()) ?? Date()
+            return formatter.string(from: date).lowercased()
+        }
+    }
+
+    /// Conversation rate by hour of day, for hours with enough sample.
+    var hourlyPerformance: [HourPerformance] {
+        var knocksByHour: [Int: Int] = [:]
+        var convosByHour: [Int: Int] = [:]
+        for event in events {
+            let hour = Calendar.current.component(.hour, from: event.timestamp)
+            knocksByHour[hour, default: 0] += 1
+            if event.outcome.isConversation { convosByHour[hour, default: 0] += 1 }
+        }
+        return knocksByHour.keys.sorted().map {
+            HourPerformance(hour: $0, knocks: knocksByHour[$0] ?? 0,
+                            conversations: convosByHour[$0] ?? 0)
+        }
+    }
+
+    struct StreetPerformance: Identifiable {
+        let street: String
+        let knocks: Int
+        let leads: Int          // leads + inspections + signed
+        var id: String { street }
+        var rate: Double { knocks > 0 ? Double(leads) / Double(knocks) : 0 }
+    }
+
+    /// Streets ranked by lead conversion (min 3 knocks to rank).
+    var bestStreets: [StreetPerformance] {
+        var knocksByStreet: [String: Int] = [:]
+        var leadsByStreet: [String: Int] = [:]
+        for event in events {
+            guard let address = event.address, !address.isEmpty else { continue }
+            let street = Self.streetName(from: address)
+            knocksByStreet[street, default: 0] += 1
+            switch event.outcome {
+            case .lead, .inspectionSet, .inspectionCompleted, .contractSigned:
+                leadsByStreet[street, default: 0] += 1
+            default: break
+            }
+        }
+        return knocksByStreet
+            .filter { $0.value >= 3 }
+            .map { StreetPerformance(street: $0.key, knocks: $0.value,
+                                     leads: leadsByStreet[$0.key] ?? 0) }
+            .sorted { ($0.rate, $0.knocks) > ($1.rate, $1.knocks) }
+    }
+
     // MARK: - Persistence
 
     /// New fields are optional so Phase 1/2 store files keep decoding.
@@ -181,6 +282,7 @@ final class AppStore {
         var intel: [PropertyIntel]?
         var storms: [StormEvent]?
         var trail: [TrailPoint]?
+        var profile: RepProfile?
     }
 
     private func load() {
@@ -192,11 +294,13 @@ final class AppStore {
         intel = snapshot.intel ?? []
         storms = snapshot.storms ?? []
         trail = snapshot.trail ?? []
+        profile = snapshot.profile ?? RepProfile()
     }
 
     private func save() {
         let snapshot = Snapshot(events: events, leads: leads, goals: goals,
-                                intel: intel, storms: storms, trail: trail)
+                                intel: intel, storms: storms, trail: trail,
+                                profile: profile)
         guard let data = try? JSONEncoder().encode(snapshot) else { return }
         try? data.write(to: fileURL, options: .atomic)
     }

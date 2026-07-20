@@ -39,13 +39,21 @@ struct MoreView: View {
                         Label("Storm Log", systemImage: "cloud.bolt.rain.fill")
                             .font(.headline)
                     }
-                }
-                Section("Coming Soon") {
-                    comingSoon("Team & Leaderboard", icon: "person.3.fill", phase: "Phase 4")
-                    comingSoon("Digital Card", icon: "person.crop.rectangle.fill", phase: "Phase 4")
+                    NavigationLink {
+                        DigitalCardView()
+                    } label: {
+                        Label("Digital Card", systemImage: "person.crop.rectangle.fill")
+                            .font(.headline)
+                    }
+                    NavigationLink {
+                        TeamView()
+                    } label: {
+                        Label("Team & Leaderboard", systemImage: "person.3.fill")
+                            .font(.headline)
+                    }
                 }
                 Section {
-                    LabeledContent("Version", value: "0.3.0 · Phase 3")
+                    LabeledContent("Version", value: "0.4.0 · Phase 4")
                 }
             }
             .navigationTitle("More")
@@ -62,19 +70,5 @@ struct MoreView: View {
                     .foregroundStyle(AQETheme.coral)
             }
         }
-    }
-
-    private func comingSoon(_ title: String, icon: String, phase: String) -> some View {
-        HStack {
-            Label(title, systemImage: icon)
-            Spacer()
-            Text(phase)
-                .font(.caption.weight(.semibold))
-                .foregroundStyle(.secondary)
-                .padding(.horizontal, 8)
-                .padding(.vertical, 4)
-                .background(Color(.systemGray5), in: Capsule())
-        }
-        .foregroundStyle(.secondary)
     }
 }

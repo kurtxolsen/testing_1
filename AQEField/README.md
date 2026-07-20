@@ -24,8 +24,16 @@ new leads and draws a radius overlay on the map, a GPS breadcrumb trail
 recorder, and a heat view layer. Map gains a layers menu (trail / storm /
 heat) and a Neighborhood Mode launcher.
 
-Planned next: Phase 4 team + deep analytics (Supabase sync hooks in behind
-`AppStore`).
+**Phase 4 (this build):** deep analytics + digital card + team scaffold —
+Reports gains a conversion funnel (knocks → conversations → leads →
+inspections → signed, with rates and knocks-per-lead), best-time-of-day
+rankings, and best-streets rankings; a Digital Card (branded card face,
+on-device QR that encodes a vCard for homeowner scanning, share sheet) with
+an editable rep profile; and a Team leaderboard/goal screen whose row model
+is Supabase-ready so teammates appear when sync lands.
+
+Still open: Supabase sync + auth, PDF imports into the Field Bible, Apple
+Wallet pass (needs a signing certificate), widgets/Live Activities/Watch.
 
 ## Build & run (on your Mac)
 
