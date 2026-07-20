@@ -8,6 +8,7 @@ struct DashboardView: View {
     @Environment(LocationService.self) private var location
     @Binding var selectedTab: AppTab
     @State private var showNewLead = false
+    @State private var showFieldBible = false
 
     var body: some View {
         NavigationStack {
@@ -31,6 +32,7 @@ struct DashboardView: View {
             }
         }
         .sheet(isPresented: $showNewLead) { NewLeadSheet() }
+        .sheet(isPresented: $showFieldBible) { FieldBibleView() }
     }
 
     // MARK: - Header
@@ -89,6 +91,9 @@ struct DashboardView: View {
                 quickAction("Follow Up", icon: "clock.arrow.circlepath", color: AQETheme.statusOrange) {
                     selectedTab = .reports
                 }
+            }
+            quickAction("Field Bible", icon: "book.fill", color: AQETheme.navyLight) {
+                showFieldBible = true
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)

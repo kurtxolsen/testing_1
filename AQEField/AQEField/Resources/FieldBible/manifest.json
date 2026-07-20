@@ -1,0 +1,23 @@
+{
+  "articles": [
+    { "file": "scripts-door-approach", "title": "Door Approach Scripts", "category": "Scripts", "tags": ["opener", "knock", "door", "hanger", "close"] },
+    { "file": "scripts-inspection-close", "title": "Inspection & Kitchen-Table Close", "category": "Scripts", "tags": ["inspection", "close", "photos", "contract", "claim"] },
+    { "file": "no-damage-denial", "title": "\"There's no damage\"", "category": "Objections", "tags": ["denial", "no damage", "skeptic", "roof fine"] },
+    { "file": "bad-timing", "title": "\"Now's not a good time\"", "category": "Objections", "tags": ["busy", "timing", "later", "callback"] },
+    { "file": "spouse-not-home", "title": "\"My spouse isn't home\"", "category": "Objections", "tags": ["spouse", "wife", "husband", "decision maker"] },
+    { "file": "already-have-a-guy", "title": "\"I already have a guy\"", "category": "Objections", "tags": ["competitor", "roofer", "contractor", "loyal"] },
+    { "file": "price-and-deductible", "title": "Price & Deductible", "category": "Objections", "tags": ["price", "cost", "deductible", "afford", "waive"] },
+    { "file": "insurance-skepticism", "title": "Insurance Skepticism", "category": "Objections", "tags": ["rates", "premium", "claim", "insurance", "afraid"] },
+    { "file": "storm-chaser-distrust", "title": "Storm-Chaser Distrust", "category": "Objections", "tags": ["scam", "storm chaser", "trust", "fly by night"] },
+    { "file": "adjuster-pushback", "title": "Adjuster Pushback", "category": "Objections", "tags": ["adjuster", "denied", "partial", "dispute"] },
+    { "file": "insurance-claims-101", "title": "Insurance Claims 101", "category": "Insurance", "tags": ["acv", "rcv", "depreciation", "deductible", "supplement", "rates", "filing window"] },
+    { "file": "carrier-intel", "title": "Carrier Intel", "category": "Insurance", "tags": ["state farm", "allstate", "farmers", "usaa", "travelers", "liberty mutual", "adjuster"] },
+    { "file": "gaf-system", "title": "The GAF Roofing System", "category": "GAF & Warranty", "tags": ["gaf", "timberline", "hdz", "layerlock", "windproven", "master elite"] },
+    { "file": "warranty-guide", "title": "Warranty Guide", "category": "GAF & Warranty", "tags": ["warranty", "golden pledge", "silver pledge", "system plus", "workmanship"] },
+    { "file": "roof-anatomy", "title": "Roof Anatomy", "category": "Roof Knowledge", "tags": ["decking", "flashing", "underlayment", "ventilation", "pitch", "square", "drip edge"] },
+    { "file": "damage-id", "title": "Storm Damage ID", "category": "Roof Knowledge", "tags": ["hail", "wind", "bruise", "crease", "blistering", "test square", "collateral"] },
+    { "file": "sales-psychology", "title": "Sales Psychology", "category": "Psychology", "tags": ["social proof", "loss aversion", "anchoring", "reciprocity", "silence"] },
+    { "file": "never-split-the-difference", "title": "Never Split the Difference", "category": "Psychology", "tags": ["voss", "mirror", "label", "calibrated", "accusation audit", "tactical empathy"] },
+    { "file": "follow-up-sop", "title": "Follow-Up SOP", "category": "SOPs", "tags": ["cadence", "follow up", "touch", "text templates", "overdue", "speed to lead"] }
+  ]
+}
