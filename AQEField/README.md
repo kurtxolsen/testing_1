@@ -32,8 +32,18 @@ on-device QR that encodes a vCard for homeowner scanning, share sheet) with
 an editable rep profile; and a Team leaderboard/goal screen whose row model
 is Supabase-ready so teammates appear when sync lands.
 
+**Phase 5 (this build):** Apple platform features — Siri Shortcuts / Action
+Button support ("Log a knock in AQE Field", "Today's stats in AQE Field")
+via App Intents; a Home Screen + Lock Screen widget showing today's knocks
+vs. goal (30-minute timeline, reloaded on every save); and a shift Live
+Activity with a Dynamic Island timer that starts on the first knock of the
+day and updates with every logged door ("End Shift Timer" lives in More).
+The store moved to an App Group container (`group.com.aqe.field`, with
+silent fallback and one-time migration) so the widget extension can read
+it. `AQEFieldWidgets/` is a second XcodeGen target embedded in the app.
+
 Still open: Supabase sync + auth, PDF imports into the Field Bible, Apple
-Wallet pass (needs a signing certificate), widgets/Live Activities/Watch.
+Wallet pass (needs a signing certificate), Apple Watch app.
 
 ## Build & run (on your Mac)
 
