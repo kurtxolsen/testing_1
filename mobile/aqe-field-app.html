@@ -9,28 +9,28 @@
     --bg:#F2F4F7; --card:#FFFFFF; --ink:#16273A; --muted:#5C6B7E;
     --navy:#1B3A5C; --navy-soft:#E7EDF4; --gold:#E8A020; --gold-ink:#8A5D0D;
     --line:#DCE2EA; --red:#B7362A; --red-soft:#F9E9E7; --green:#2E7D4F; --green-soft:#E7F2EB;
-    --amber:#9A6A0F; --amber-soft:#FAF0DC;
+    --amber:#9A6A0F; --amber-soft:#FAF0DC; --ring-track:#E3E8EF;
     --sheet-shadow:0 -12px 40px rgba(22,39,58,.18);
   }
   @media (prefers-color-scheme: dark) { :root {
     --bg:#0D1622; --card:#16243A; --ink:#E8ECF2; --muted:#8FA0B5;
     --navy:#3E6EA5; --navy-soft:#1D3049; --gold:#F0AC36; --gold-ink:#F0AC36;
     --line:#25374F; --red:#E06050; --red-soft:#3A1F1D; --green:#58B380; --green-soft:#173226;
-    --amber:#E3B45B; --amber-soft:#33290F;
+    --amber:#E3B45B; --amber-soft:#33290F; --ring-track:#22334B;
     --sheet-shadow:0 -12px 40px rgba(0,0,0,.5);
   }}
   :root[data-theme="light"] {
     --bg:#F2F4F7; --card:#FFFFFF; --ink:#16273A; --muted:#5C6B7E;
     --navy:#1B3A5C; --navy-soft:#E7EDF4; --gold:#E8A020; --gold-ink:#8A5D0D;
     --line:#DCE2EA; --red:#B7362A; --red-soft:#F9E9E7; --green:#2E7D4F; --green-soft:#E7F2EB;
-    --amber:#9A6A0F; --amber-soft:#FAF0DC;
+    --amber:#9A6A0F; --amber-soft:#FAF0DC; --ring-track:#E3E8EF;
     --sheet-shadow:0 -12px 40px rgba(22,39,58,.18);
   }
   :root[data-theme="dark"] {
     --bg:#0D1622; --card:#16243A; --ink:#E8ECF2; --muted:#8FA0B5;
     --navy:#3E6EA5; --navy-soft:#1D3049; --gold:#F0AC36; --gold-ink:#F0AC36;
     --line:#25374F; --red:#E06050; --red-soft:#3A1F1D; --green:#58B380; --green-soft:#173226;
-    --amber:#E3B45B; --amber-soft:#33290F;
+    --amber:#E3B45B; --amber-soft:#33290F; --ring-track:#22334B;
     --sheet-shadow:0 -12px 40px rgba(0,0,0,.5);
   }
 
@@ -41,23 +41,18 @@
     font:16px/1.45 -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
     -webkit-font-smoothing:antialiased; padding-bottom:calc(76px + env(safe-area-inset-bottom));
   }
-  button { font:inherit; color:inherit; background:none; border:0; padding:0; cursor:pointer; }
+  button { font:inherit; color:inherit; background:none; border:0; padding:0; cursor:pointer; -webkit-tap-highlight-color:transparent; }
   button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
-    outline:2px solid var(--gold); outline-offset:2px;
-  }
+    outline:2px solid var(--gold); outline-offset:2px; }
   input, select, textarea {
     font:inherit; color:var(--ink); background:var(--card);
-    border:1px solid var(--line); border-radius:10px; padding:10px 12px; width:100%;
-  }
+    border:1px solid var(--line); border-radius:10px; padding:10px 12px; width:100%; }
   a { color:var(--navy); }
 
-  /* ---- header ---- */
   header {
     position:sticky; top:0; z-index:20; background:var(--navy);
     padding:calc(10px + env(safe-area-inset-top)) 16px 10px;
-    display:flex; align-items:center; justify-content:space-between;
-  }
-  :root[data-theme="dark"] header, :root:not([data-theme="light"]) header { }
+    display:flex; align-items:center; justify-content:space-between; }
   header .brand { color:#fff; font-weight:700; letter-spacing:.04em; font-size:15px; }
   header .brand small { display:block; font-weight:400; letter-spacing:.14em; font-size:9px;
     color:var(--gold); text-transform:uppercase; }
@@ -65,24 +60,83 @@
   header .h-actions button { color:#fff; opacity:.85; font-size:13px; }
 
   main { padding:14px 14px 0; max-width:640px; margin:0 auto; }
-  .view { display:none; }
-  .view.active { display:block; }
-
+  .view { display:none; } .view.active { display:block; }
   .eyebrow { font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted);
     font-weight:600; margin:18px 2px 8px; }
   .eyebrow:first-child { margin-top:2px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:14px;
+    padding:13px 14px; margin-bottom:10px; position:relative; }
+  .btn { background:var(--navy); color:#fff; border-radius:10px; padding:10px 16px; font-weight:600; }
+  .btn.gold { background:var(--gold); color:#20293A; }
+  .btn.ghost { background:var(--card); color:var(--ink); border:1px solid var(--line); }
+  .btn.danger { background:var(--red-soft); color:var(--red); }
+  .chip { font-size:11.5px; font-weight:600; border-radius:999px; padding:3px 9px; }
+  .chip.status { background:var(--navy-soft); color:var(--navy); }
+  .chip.ok { background:var(--green-soft); color:var(--green); }
+  .chip.warn { background:var(--amber-soft); color:var(--amber); }
+  .chip.late { background:var(--red-soft); color:var(--red); }
+  .empty { text-align:center; color:var(--muted); padding:38px 24px; font-size:14.5px; }
+  .empty b { display:block; font-size:17px; color:var(--ink); margin-bottom:6px; }
 
-  /* ---- pipeline strip ---- */
+  /* ---- dashboard ---- */
+  .wx { display:flex; align-items:center; gap:10px; }
+  .wx button { flex:1; background:var(--card); border:1px solid var(--line); border-radius:12px;
+    padding:10px 12px; text-align:left; font-size:14px; }
+  .wx .wx-main { font-weight:650; }
+  .wx .wx-sub { color:var(--muted); font-size:12.5px; }
+  .statgrid { display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; }
+  .stat { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:10px 6px 8px;
+    text-align:center; }
+  .stat b { display:block; font-size:21px; font-variant-numeric:tabular-nums; }
+  .stat span { font-size:10.5px; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); font-weight:600; }
+  .rings { display:grid; grid-template-columns:repeat(4, 1fr); gap:4px; text-align:center; }
+  .ring-label { font-size:10.5px; letter-spacing:.04em; text-transform:uppercase; color:var(--muted);
+    font-weight:600; margin-top:2px; }
+  .ring-num { font-size:13px; font-weight:650; font-variant-numeric:tabular-nums; }
+  .money-row { display:flex; justify-content:space-between; align-items:baseline; }
+  .money-row b { font-size:24px; font-variant-numeric:tabular-nums; color:var(--gold-ink); }
+  .money-sub { color:var(--muted); font-size:12.5px; margin-top:2px; }
+  .streak { display:flex; gap:8px; align-items:center; font-weight:650; }
+  .streak .flame { font-size:22px; }
+
+  /* ---- knock mode ---- */
+  .k-timer { display:flex; justify-content:space-between; align-items:center; }
+  .k-timer b { font-size:26px; font-variant-numeric:tabular-nums; }
+  .k-timer .sub { color:var(--muted); font-size:12.5px; }
+  .k-grid { display:grid; grid-template-columns:1fr 1fr; gap:9px; margin-top:10px; }
+  .k-btn { min-height:66px; border-radius:14px; font-size:16.5px; font-weight:700;
+    border:1px solid var(--line); background:var(--card); display:flex; flex-direction:column;
+    align-items:center; justify-content:center; gap:2px; }
+  .k-btn small { font-size:10.5px; font-weight:600; letter-spacing:.05em; text-transform:uppercase; opacity:.75; }
+  .k-btn:active { transform:scale(.97); }
+  .k-btn.o-na { color:var(--muted); }
+  .k-btn.o-talk { color:var(--navy); border-color:var(--navy); }
+  .k-btn.o-rent { color:var(--muted); }
+  .k-btn.o-fu { color:var(--amber); border-color:var(--amber); }
+  .k-btn.o-lead { background:var(--gold); border-color:var(--gold); color:#20293A; }
+  .k-btn.o-insp { color:var(--green); border-color:var(--green); }
+  .k-btn.o-done { background:var(--green); border-color:var(--green); color:#fff; }
+  .k-btn.o-sign { background:var(--navy); border-color:var(--navy); color:var(--gold); }
+  .bigstart { width:100%; min-height:88px; border-radius:16px; background:var(--gold); color:#20293A;
+    font-size:21px; font-weight:800; letter-spacing:.02em; }
+  .doors { display:flex; gap:8px; overflow-x:auto; scroll-snap-type:x mandatory; padding:4px 2px 8px;
+    -webkit-overflow-scrolling:touch; }
+  .door { scroll-snap-align:center; flex:0 0 74%; background:var(--card); border:1px solid var(--line);
+    border-left:5px solid var(--dc, var(--line)); border-radius:12px; padding:10px 12px; text-align:left; }
+  .door .d-out { font-weight:700; font-size:15px; }
+  .door .d-sub { color:var(--muted); font-size:12px; }
+  #trail { width:100%; height:110px; border-radius:12px; background:var(--navy-soft); display:block; }
+  .hint { color:var(--muted); font-size:12.5px; margin:6px 2px 0; }
+
+  /* ---- leads ---- */
+  .searchrow { display:flex; gap:8px; margin-bottom:12px; }
+  .searchrow input { flex:1; }
   .pipe { display:flex; gap:6px; overflow-x:auto; padding:2px 2px 10px; -webkit-overflow-scrolling:touch; }
-  .pipe button { flex:0 0 auto; background:var(--card); border:1px solid var(--line);
+  .pipe button, .cats button { flex:0 0 auto; background:var(--card); border:1px solid var(--line);
     border-radius:999px; padding:5px 11px; font-size:12.5px; color:var(--muted); white-space:nowrap; }
   .pipe button b { color:var(--ink); font-variant-numeric:tabular-nums; }
   .pipe button.on { background:var(--navy); border-color:var(--navy); color:#fff; }
   .pipe button.on b { color:var(--gold); }
-
-  /* ---- cards ---- */
-  .card { background:var(--card); border:1px solid var(--line); border-radius:14px;
-    padding:13px 14px; margin-bottom:10px; position:relative; }
   .lead-card { padding-left:18px; width:100%; text-align:left; display:block; }
   .lead-card::before { content:""; position:absolute; left:0; top:10px; bottom:10px; width:4px;
     border-radius:0 4px 4px 0; background:var(--stripe, var(--line)); }
@@ -91,28 +145,9 @@
   .lead-val { color:var(--muted); font-size:13px; font-variant-numeric:tabular-nums; }
   .lead-sub { color:var(--muted); font-size:13.5px; margin-top:2px; }
   .badges { display:flex; flex-wrap:wrap; gap:6px; margin-top:9px; }
-  .chip { font-size:11.5px; font-weight:600; letter-spacing:.02em; border-radius:999px; padding:3px 9px; }
-  .chip.status { background:var(--navy-soft); color:var(--navy); }
-  .chip.ok { background:var(--green-soft); color:var(--green); }
-  .chip.warn { background:var(--amber-soft); color:var(--amber); }
-  .chip.late { background:var(--red-soft); color:var(--red); }
 
-  .empty { text-align:center; color:var(--muted); padding:44px 24px; font-size:14.5px; }
-  .empty b { display:block; font-size:17px; color:var(--ink); margin-bottom:6px; }
-
-  /* ---- search ---- */
-  .searchrow { display:flex; gap:8px; margin-bottom:12px; }
-  .searchrow input { flex:1; }
-  .btn { background:var(--navy); color:#fff; border-radius:10px; padding:10px 16px; font-weight:600; }
-  .btn.gold { background:var(--gold); color:#20293A; }
-  .btn.ghost { background:var(--card); color:var(--ink); border:1px solid var(--line); }
-  .btn.danger { background:var(--red-soft); color:var(--red); }
-  .btn:disabled { opacity:.5; }
-
-  /* ---- objections ---- */
+  /* ---- bible ---- */
   .cats { display:flex; gap:6px; overflow-x:auto; padding-bottom:10px; -webkit-overflow-scrolling:touch; }
-  .cats button { flex:0 0 auto; background:var(--card); border:1px solid var(--line);
-    border-radius:999px; padding:5px 11px; font-size:12.5px; color:var(--muted); white-space:nowrap; }
   .cats button.on { background:var(--gold); border-color:var(--gold); color:#20293A; font-weight:650; }
   .obj-q { font-weight:650; font-size:15.5px; }
   .obj-cat { color:var(--muted); font-size:12px; margin-top:2px; }
@@ -122,14 +157,21 @@
   .obj-sec.rf { color:var(--navy); } .obj-sec.rs { color:var(--gold-ink); } .obj-sec.ps { color:var(--muted); }
   .obj-body p { margin:0 0 4px; font-size:14.5px; }
   .obj-body p.say { background:var(--navy-soft); border-radius:10px; padding:10px 12px; }
-
-  /* ---- intel ---- */
   .intel-cols h4 { margin:12px 0 4px; font-size:12px; letter-spacing:.08em; text-transform:uppercase; }
   .intel-cols h4.pb { color:var(--red); } .intel-cols h4.cs { color:var(--green); }
   .intel-cols ul { margin:0; padding-left:18px; font-size:14px; }
   .intel-cols li { margin-bottom:5px; }
 
-  /* ---- sheet / modal ---- */
+  /* ---- stats ---- */
+  .bar-row { display:flex; align-items:center; gap:10px; background:var(--card);
+    border:1px solid var(--line); border-radius:12px; padding:10px 12px; margin-bottom:8px; }
+  .bar-row.thin { opacity:.55; }
+  .bar-name { flex:0 0 34%; font-weight:650; font-size:14px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .bar-track { flex:1; height:10px; border-radius:5px; background:var(--ring-track); overflow:hidden; }
+  .bar-fill { height:100%; border-radius:5px; background:var(--gold); }
+  .bar-num { flex:0 0 auto; font-size:12.5px; color:var(--muted); font-variant-numeric:tabular-nums; min-width:74px; text-align:right; }
+
+  /* ---- sheet ---- */
   .sheet-wrap { position:fixed; inset:0; z-index:40; display:none; }
   .sheet-wrap.open { display:block; }
   .scrim { position:absolute; inset:0; background:rgba(10,18,28,.45); }
@@ -144,25 +186,24 @@
   .frow2 { display:flex; gap:10px; } .frow2 .frow { flex:1; }
   .sheet .actions { display:flex; gap:10px; margin-top:14px; }
   .sheet .actions .btn { flex:1; text-align:center; }
-
   .detail-links { display:flex; gap:8px; margin:10px 0; }
   .detail-links a { flex:1; text-align:center; background:var(--card); border:1px solid var(--line);
     border-radius:10px; padding:9px 4px; font-size:13.5px; text-decoration:none; font-weight:600; }
-  .touchlog { font-size:13.5px; }
-  .touchlog li { margin-bottom:6px; }
+  .touchlog { font-size:13.5px; } .touchlog li { margin-bottom:6px; }
   .touchlog .t-when { color:var(--muted); font-size:12px; }
-
-  /* ---- quiz ---- */
   .quiz-card { text-align:center; padding:26px 18px; }
   .quiz-card .q { font-size:19px; font-weight:650; text-wrap:balance; margin:8px 0 18px; }
+  .wxgrid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+  .wxgrid button { background:var(--card); border:1px solid var(--line); border-radius:12px;
+    padding:12px 4px; font-size:14px; font-weight:600; }
+  .wxgrid button.on { background:var(--navy); color:#fff; border-color:var(--navy); }
 
   /* ---- tab bar ---- */
   nav.tabbar { position:fixed; left:0; right:0; bottom:0; z-index:30;
     background:var(--card); border-top:1px solid var(--line);
     display:flex; padding:6px 8px calc(6px + env(safe-area-inset-bottom)); }
   nav.tabbar button { flex:1; display:flex; flex-direction:column; align-items:center; gap:2px;
-    color:var(--muted); font-size:10.5px; font-weight:600; letter-spacing:.02em; padding:4px 0;
-    position:relative; }
+    color:var(--muted); font-size:10.5px; font-weight:600; padding:4px 0; position:relative; }
   nav.tabbar button.on { color:var(--navy); }
   nav.tabbar svg { width:23px; height:23px; }
   nav.tabbar .nbadge { position:absolute; top:-1px; right:calc(50% - 21px);
@@ -171,61 +212,117 @@
 
   .fab { position:fixed; right:18px; bottom:calc(86px + env(safe-area-inset-bottom)); z-index:25;
     width:54px; height:54px; border-radius:50%; background:var(--gold); color:#20293A;
-    font-size:30px; line-height:54px; text-align:center; box-shadow:0 6px 18px rgba(0,0,0,.25); }
-
+    font-size:30px; line-height:54px; text-align:center; box-shadow:0 6px 18px rgba(0,0,0,.25); display:none; }
   .toast { position:fixed; left:50%; transform:translateX(-50%);
     bottom:calc(96px + env(safe-area-inset-bottom)); z-index:50; background:var(--ink); color:var(--bg);
     padding:9px 16px; border-radius:999px; font-size:13.5px; opacity:0; transition:opacity .2s; pointer-events:none; }
   .toast.show { opacity:1; }
-  @media (prefers-reduced-motion: reduce) { .toast { transition:none; } }
+  @media (prefers-reduced-motion: reduce) { .toast { transition:none; } .k-btn:active { transform:none; } }
 </style>
 
 <header>
-  <div class="brand">AMERICAN QUALITY EXTERIORS<small>Field Toolkit</small></div>
+  <div class="brand">AQE FIELD<small>American Quality Exteriors</small></div>
   <div class="h-actions">
-    <button id="btn-export" aria-label="Backup data">Backup</button>
-    <button id="btn-import" aria-label="Restore data">Restore</button>
+    <button id="btn-export">Backup</button>
+    <button id="btn-import">Restore</button>
   </div>
 </header>
 
 <main>
+  <!-- HOME / DASHBOARD -->
+  <section class="view active" id="view-home">
+    <div class="wx">
+      <button id="wx-btn" aria-label="Set today's weather"><span class="wx-main" id="wx-main">Set today's weather</span>
+        <span class="wx-sub" id="wx-sub">Stamped onto every lead you log today</span></button>
+    </div>
+    <div class="eyebrow">Today</div>
+    <div class="statgrid" id="statgrid"></div>
+    <div class="eyebrow">Goal rings <button id="btn-goals" style="float:right;color:var(--navy);font-size:12px;font-weight:600">Edit goals</button></div>
+    <div class="card"><div class="rings" id="rings"></div></div>
+    <div class="eyebrow">Money</div>
+    <div class="card">
+      <div class="money-row"><span>Earned today (est.)</span><b id="money-today">$0</b></div>
+      <div class="money-row" style="margin-top:6px"><span>Pipeline potential</span><b id="money-pipe" style="font-size:18px">$0</b></div>
+      <div class="money-sub" id="money-sub"></div>
+    </div>
+    <div class="eyebrow">Streak</div>
+    <div class="card streak"><span class="flame">🔥</span><span id="streak-text">No streak yet — knock today to start one.</span></div>
+  </section>
+
+  <!-- KNOCK MODE -->
+  <section class="view" id="view-knock">
+    <div id="knock-idle">
+      <button class="bigstart" id="btn-start">START KNOCKING</button>
+      <p class="hint">Starts the session clock. Every outcome below is one tap, timestamped, and GPS-tagged when your phone allows it.</p>
+    </div>
+    <div id="knock-live" hidden>
+      <div class="card k-timer">
+        <div><b id="k-clock">0:00</b><div class="sub" id="k-sub">Session running</div></div>
+        <button class="btn ghost" id="btn-end">End session</button>
+      </div>
+      <div class="k-grid">
+        <button class="k-btn o-na"   data-out="No Answer">No Answer</button>
+        <button class="k-btn o-talk" data-out="Talked">Talked</button>
+        <button class="k-btn o-rent" data-out="Renter">Renter</button>
+        <button class="k-btn o-fu"   data-out="Follow Up">Follow Up<small>creates reminder</small></button>
+        <button class="k-btn o-lead" data-out="Lead">Lead<small>opens quick form</small></button>
+        <button class="k-btn o-insp" data-out="Inspection Set">Inspection Set<small>opens quick form</small></button>
+        <button class="k-btn o-done" data-out="Inspection Completed">Inspection Done</button>
+        <button class="k-btn o-sign" data-out="Contract Signed">Contract Signed<small>opens quick form</small></button>
+      </div>
+      <div class="eyebrow">This session — swipe through doors</div>
+      <div class="doors" id="doors"></div>
+      <canvas id="trail" width="600" height="220" aria-label="GPS breadcrumb trail"></canvas>
+      <p class="hint" id="trail-hint">Breadcrumb trail draws here once two GPS points land.</p>
+    </div>
+  </section>
+
   <!-- LEADS -->
-  <section class="view active" id="view-leads">
+  <section class="view" id="view-leads">
+    <div id="fu-strip"></div>
     <div class="pipe" id="pipe"></div>
     <div class="searchrow"><input id="lead-search" type="search" placeholder="Search name, address, carrier"></div>
     <div id="lead-list"></div>
   </section>
 
-  <!-- FOLLOW-UPS -->
-  <section class="view" id="view-followups">
-    <div class="eyebrow">Breaching staleness thresholds</div>
-    <div id="fu-list"></div>
+  <!-- STATS -->
+  <section class="view" id="view-stats">
+    <div class="eyebrow">All-time numbers</div>
+    <div class="statgrid" id="st-totals"></div>
+    <div class="eyebrow">Best neighborhoods</div>
+    <div id="st-areas"></div>
+    <div class="eyebrow">Best time of day</div>
+    <div id="st-times"></div>
+    <p class="hint">Rates need volume to mean anything — rows fade in once an area or time slot has 10+ knocks.
+      Neighborhoods come from the name you give each knocking session.</p>
   </section>
 
-  <!-- OBJECTIONS -->
-  <section class="view" id="view-obj">
+  <!-- BIBLE -->
+  <section class="view" id="view-bible">
     <div class="searchrow">
-      <input id="obj-search" type="search" placeholder='Try "deductible" or "storm chaser"'>
+      <input id="obj-search" type="search" placeholder='Field Bible — try "deductible"'>
       <button class="btn gold" id="btn-quiz">Quiz</button>
     </div>
     <div class="cats" id="obj-cats"></div>
     <div id="obj-list"></div>
-  </section>
-
-  <!-- INTEL -->
-  <section class="view" id="view-intel">
-    <div class="eyebrow">Carrier field intelligence</div>
+    <div class="eyebrow">Carrier intel</div>
     <div id="intel-list"></div>
+    <div class="card" style="color:var(--muted);font-size:13.5px">
+      <b style="color:var(--ink)">Phase 2 shelf space reserved:</b> scripts, insurance explanations,
+      GAF system guide, roof anatomy, damage gallery, sales psychology, forms &amp; SOPs, warranty info —
+      built from the AQE PDFs once they're uploaded.
+    </div>
   </section>
 </main>
 
 <button class="fab" id="fab" aria-label="Add lead">+</button>
 
 <nav class="tabbar">
-  <button data-tab="leads" class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 20V9.5L12 4l8 5.5V20h-5v-6h-6v6H4z"/></svg>Leads</button>
-  <button data-tab="followups"><span class="nbadge" id="fu-badge" hidden></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8.5"/><path d="M12 7v5l3.5 2"/></svg>Follow-ups</button>
-  <button data-tab="obj"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 5h16v11H9l-5 4V5z"/></svg>Objections</button>
-  <button data-tab="intel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l8 4-8 4-8-4 8-4zM4 11l8 4 8-4M4 15l8 4 8-4"/></svg>Intel</button>
+  <button data-tab="home" class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 20V9.5L12 4l8 5.5V20h-5v-6h-6v6H4z"/></svg>Home</button>
+  <button data-tab="knock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2a7 7 0 0 1 7 7c0 5-7 13-7 13S5 14 5 9a7 7 0 0 1 7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>Knock</button>
+  <button data-tab="leads"><span class="nbadge" id="fu-badge" hidden></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="8" r="3.5"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M16 4.5a3.5 3.5 0 0 1 0 7M21 20c0-2.8-1.9-5.1-4.5-5.8"/></svg>Leads</button>
+  <button data-tab="stats"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 20h16M6 20v-7m6 7V4m6 16v-10"/></svg>Stats</button>
+  <button data-tab="bible"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3V4z"/><path d="M5 17V4M9 8h6"/></svg>Bible</button>
 </nav>
 
 <!-- add/edit lead sheet -->
@@ -246,6 +343,7 @@
         <select id="f-source"><option>knock</option><option>referral</option><option>sign-call</option><option>canvass</option></select></div>
     </div>
     <div class="frow"><label for="f-notes">Notes</label><textarea id="f-notes" rows="2"></textarea></div>
+    <p class="hint" id="add-auto"></p>
     <div class="actions">
       <button class="btn ghost" data-close>Cancel</button>
       <button class="btn" id="btn-save-lead">Save lead</button>
@@ -262,10 +360,54 @@
 <!-- quiz sheet -->
 <div class="sheet-wrap" id="sheet-quiz">
   <div class="scrim" data-close></div>
+  <div class="sheet"><div class="grab"></div><div class="quiz-card" id="quiz-body"></div></div>
+</div>
+
+<!-- weather sheet -->
+<div class="sheet-wrap" id="sheet-wx">
+  <div class="scrim" data-close></div>
   <div class="sheet">
     <div class="grab"></div>
-    <div class="quiz-card" id="quiz-body"></div>
+    <h2>Today's conditions</h2>
+    <p class="hint" style="margin-top:-6px">The app works fully offline, so set this once in the morning — it stamps onto every lead you log today.</p>
+    <div class="wxgrid" id="wx-conditions"></div>
+    <div class="frow2" style="margin-top:12px">
+      <div class="frow"><label for="wx-temp">Temp °F</label><input id="wx-temp" inputmode="numeric"></div>
+      <div class="frow"><label for="wx-wind">Wind mph</label><input id="wx-wind" inputmode="numeric"></div>
+    </div>
+    <div class="actions">
+      <button class="btn ghost" data-close>Cancel</button>
+      <button class="btn" id="wx-save">Save</button>
+    </div>
   </div>
+</div>
+
+<!-- goals sheet -->
+<div class="sheet-wrap" id="sheet-goals">
+  <div class="scrim" data-close></div>
+  <div class="sheet">
+    <div class="grab"></div>
+    <h2>Daily goals</h2>
+    <div class="frow2">
+      <div class="frow"><label for="g-knocks">Knocks</label><input id="g-knocks" inputmode="numeric"></div>
+      <div class="frow"><label for="g-convos">Conversations</label><input id="g-convos" inputmode="numeric"></div>
+    </div>
+    <div class="frow2">
+      <div class="frow"><label for="g-insp">Inspections</label><input id="g-insp" inputmode="numeric"></div>
+      <div class="frow"><label for="g-signed">Signed</label><input id="g-signed" inputmode="numeric"></div>
+    </div>
+    <div class="frow"><label for="g-avgjob">Avg. commission per signed job $</label><input id="g-avgjob" inputmode="numeric"></div>
+    <div class="actions">
+      <button class="btn ghost" data-close>Cancel</button>
+      <button class="btn" id="g-save">Save goals</button>
+    </div>
+  </div>
+</div>
+
+<!-- door edit sheet -->
+<div class="sheet-wrap" id="sheet-door">
+  <div class="scrim" data-close></div>
+  <div class="sheet" id="door-body"></div>
 </div>
 
 <div class="toast" id="toast" role="status"></div>
@@ -274,7 +416,7 @@
 <script>
 "use strict";
 
-/* ================= pipeline model (mirrors stormtrack) ================= */
+/* ================= model ================= */
 const PIPELINE = ["knocked","inspected","claim-filed","adjuster-scheduled","adjuster-met",
                   "approved","contract-signed","build-scheduled","built","closed"];
 const TERMINAL = ["dead","denied"];
@@ -282,10 +424,28 @@ const THRESHOLDS = { "knocked":2,"inspected":1,"claim-filed":3,"adjuster-schedul
   "adjuster-met":1,"approved":1,"contract-signed":5,"build-scheduled":7 };
 const TOUCH_TYPES = ["call","text","door","email","adjuster-meeting","note"];
 
+const OUTCOMES = {
+  "No Answer":            { conv:false, color:"var(--line)" },
+  "Talked":               { conv:true,  color:"var(--navy)" },
+  "Renter":               { conv:true,  color:"var(--line)" },
+  "Follow Up":            { conv:true,  color:"var(--amber)" },
+  "Lead":                 { conv:true,  color:"var(--gold)",  lead:"knocked" },
+  "Inspection Set":       { conv:true,  color:"var(--green)", lead:"inspected", insp:true },
+  "Inspection Completed": { conv:true,  color:"var(--green)", insp:true, done:true },
+  "Contract Signed":      { conv:true,  color:"var(--gold)",  lead:"contract-signed", signed:true },
+};
+const WX_CONDITIONS = ["Sunny","Partly cloudy","Overcast","Windy","Rain","Storm watch"];
+
 /* ================= storage ================= */
 const KEY = "aqe-field-v1";
-let db = { leads: [], intelNotes: {} , seq: 1 };
-try { const raw = localStorage.getItem(KEY); if (raw) db = Object.assign(db, JSON.parse(raw)); } catch (e) {}
+let db = { leads:[], intelNotes:{}, seq:1, knocks:[], sessions:[], weather:{},
+           goals:{ knocks:100, convos:25, insp:5, signed:2 }, settings:{ avgJob:1500 } };
+try { const raw = localStorage.getItem(KEY); if (raw) {
+  const old = JSON.parse(raw);
+  db = Object.assign(db, old);
+  db.goals = Object.assign({ knocks:100, convos:25, insp:5, signed:2 }, old.goals);
+  db.settings = Object.assign({ avgJob:1500 }, old.settings);
+}} catch (e) {}
 function save() { try { localStorage.setItem(KEY, JSON.stringify(db)); } catch (e) { toast("Couldn't save — storage full?"); } }
 
 /* ================= helpers ================= */
@@ -293,21 +453,186 @@ const $ = (s, el=document) => el.querySelector(s);
 const $$ = (s, el=document) => [...el.querySelectorAll(s)];
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const money = v => v ? "$" + Number(v).toLocaleString() : "";
+const dayKey = (t=Date.now()) => new Date(t).toDateString();
 const daysSince = ts => Math.floor((Date.now() - ts) / 86400000);
 function toast(msg) { const t = $("#toast"); t.textContent = msg; t.classList.add("show");
-  clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove("show"), 2200); }
-
+  clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove("show"), 2000); }
+function grabGPS(cb) {
+  if (!navigator.geolocation) { cb(null); return; }
+  navigator.geolocation.getCurrentPosition(
+    p => cb({ lat:p.coords.latitude, lng:p.coords.longitude }),
+    () => cb(null), { timeout:4000, maximumAge:30000 });
+}
 function staleness(lead) {
   if (!(lead.status in THRESHOLDS)) return null;
   const th = THRESHOLDS[lead.status], d = daysSince(lead.lastTouch);
-  const isToday = new Date(lead.lastTouch).toDateString() === new Date().toDateString();
-  if (th === 0) return isToday ? { level:"ok", d } : { level: d >= 2 ? "late" : "warn", d, over: d };
+  const isToday = dayKey(lead.lastTouch) === dayKey();
+  if (th === 0) return isToday ? { level:"ok", d } : { level: d >= 2 ? "late" : "warn", d, over:d };
   if (d <= th) return { level:"ok", d };
   return { level: d >= 2*th ? "late" : "warn", d, over: d - th };
 }
 
-/* ================= leads view ================= */
-let pipeFilter = null;
+/* ================= today stats ================= */
+function todayKnocks() { return db.knocks.filter(k => dayKey(k.at) === dayKey()); }
+function todayStats() {
+  const ks = todayKnocks();
+  const convos = ks.filter(k => OUTCOMES[k.out]?.conv).length;
+  const insp = ks.filter(k => OUTCOMES[k.out]?.insp).length;
+  const inspDone = ks.filter(k => OUTCOMES[k.out]?.done).length;
+  const signed = ks.filter(k => OUTCOMES[k.out]?.signed).length;
+  const leads = ks.filter(k => OUTCOMES[k.out]?.lead).length;
+  let ms = db.sessions.filter(s => dayKey(s.start) === dayKey())
+             .reduce((a, s) => a + ((s.end || Date.now()) - s.start), 0);
+  if (live.start) ms += Date.now() - live.start;
+  return { knocks:ks.length, convos, insp, inspDone, signed, leads, hours: ms / 3600000 };
+}
+function streakDays() {
+  const days = new Set(db.knocks.map(k => dayKey(k.at)));
+  let n = 0;
+  for (let d = new Date(); ; d.setDate(d.getDate() - 1)) {
+    if (days.has(d.toDateString())) n++;
+    else if (n === 0 && d.toDateString() === dayKey()) { /* today not knocked yet — check yesterday */ }
+    else break;
+    if (n > 400) break;
+  }
+  return n;
+}
+
+/* ================= dashboard ================= */
+function ring(pct, label, numText, color) {
+  const r = 26, c = 2 * Math.PI * r, filled = Math.min(1, pct) * c;
+  return `<div><svg width="66" height="66" viewBox="0 0 66 66" role="img" aria-label="${label} ${numText}">
+    <circle cx="33" cy="33" r="${r}" fill="none" stroke="var(--ring-track)" stroke-width="7"/>
+    <circle cx="33" cy="33" r="${r}" fill="none" stroke="${color}" stroke-width="7"
+      stroke-linecap="round" stroke-dasharray="${filled} ${c}" transform="rotate(-90 33 33)"/>
+    <text x="33" y="38" text-anchor="middle" font-size="15" font-weight="700" fill="var(--ink)">${Math.round(pct*100)}%</text>
+  </svg><div class="ring-num">${numText}</div><div class="ring-label">${label}</div></div>`;
+}
+function renderHome() {
+  const s = todayStats(), g = db.goals;
+  const wx = db.weather[dayKey()];
+  $("#wx-main").textContent = wx ? `${wx.cond}${wx.temp ? " · " + wx.temp + "°F" : ""}` : "Set today's weather";
+  $("#wx-sub").textContent = wx ? (wx.wind ? `Wind ${wx.wind} mph — stamped onto today's leads` : "Stamped onto today's leads")
+                                : "Stamped onto every lead you log today";
+  const closePct = s.inspDone ? Math.round(100 * s.signed / s.inspDone) : null;
+  $("#statgrid").innerHTML = [
+    [s.hours ? s.hours.toFixed(1) + "h" : "0h", "Hours"],
+    [s.knocks, "Knocks"], [s.convos, "Convos"],
+    [s.insp, "Inspections"], [s.leads, "Leads"],
+    [closePct === null ? "—" : closePct + "%", "Close %"],
+  ].map(([v, l]) => `<div class="stat"><b>${v}</b><span>${l}</span></div>`).join("");
+  $("#rings").innerHTML =
+    ring(g.knocks ? s.knocks/g.knocks : 0, "Knocks", `${s.knocks}/${g.knocks}`, "var(--navy)") +
+    ring(g.convos ? s.convos/g.convos : 0, "Convos", `${s.convos}/${g.convos}`, "var(--gold)") +
+    ring(g.insp ? s.insp/g.insp : 0, "Inspect", `${s.insp}/${g.insp}`, "var(--green)") +
+    ring(g.signed ? s.signed/g.signed : 0, "Signed", `${s.signed}/${g.signed}`, "var(--red)");
+  const avg = db.settings.avgJob || 0;
+  $("#money-today").textContent = money(s.signed * avg) || "$0";
+  const pipeVal = db.leads.filter(l => !TERMINAL.includes(l.status) && l.status !== "closed")
+    .reduce((a, l) => a + (l.value || 0), 0);
+  $("#money-pipe").textContent = money(pipeVal) || "$0";
+  $("#money-sub").textContent = `Based on ${money(avg)} avg. commission × ${s.signed} signed today; pipeline is open leads' est. value.`;
+  const st = streakDays();
+  $("#streak-text").textContent = st ? `${st}-day knocking streak — keep it alive.`
+                                     : "No streak yet — knock today to start one.";
+}
+
+/* ================= knock mode ================= */
+let live = { start:null, timer:null, area:"" };
+function startSession() {
+  const area = prompt("Neighborhood / area name?", db.lastArea || "");
+  if (area === null) return;
+  live.area = area.trim();
+  if (live.area) { db.lastArea = live.area; save(); }
+  live.start = Date.now();
+  $("#knock-idle").hidden = true; $("#knock-live").hidden = false;
+  live.timer = setInterval(tick, 1000); tick();
+}
+function endSession() {
+  db.sessions.push({ start:live.start, end:Date.now(), area:live.area });
+  clearInterval(live.timer); live = { start:null, timer:null, area:"" };
+  save();
+  $("#knock-idle").hidden = false; $("#knock-live").hidden = true;
+  renderHome(); toast("Session saved");
+}
+function tick() {
+  if (!live.start) return;
+  const s = Math.floor((Date.now() - live.start) / 1000);
+  $("#k-clock").textContent = Math.floor(s/60) + ":" + String(s%60).padStart(2, "0");
+  const t = todayStats();
+  $("#k-sub").textContent = `${t.knocks} knocks · ${t.convos} conversations today`;
+}
+function recordKnock(out) {
+  const k = { id:Date.now() + Math.random(), at:Date.now(), out, lat:null, lng:null, area:live.area || "" };
+  db.knocks.push(k); save();
+  grabGPS(gps => { if (gps) { k.lat = gps.lat; k.lng = gps.lng; save(); drawTrail(); } });
+  renderDoors(); renderHome(); tick();
+  const spec = OUTCOMES[out];
+  if (out === "Follow Up") {
+    openAddLead({ knock:k, followup:true }); return;
+  }
+  if (spec.lead) { openAddLead({ knock:k, status:spec.lead }); return; }
+  toast(out + " logged");
+}
+function renderDoors() {
+  const ks = todayKnocks().slice().reverse();
+  $("#doors").innerHTML = ks.length ? ks.map((k, i) =>
+    `<button class="door" data-door="${k.id}" style="--dc:${OUTCOMES[k.out]?.color || "var(--line)"}">
+       <div class="d-out">${esc(k.out)}</div>
+       <div class="d-sub">Door ${ks.length - i} · ${new Date(k.at).toLocaleTimeString([], {hour:"numeric", minute:"2-digit"})}
+         ${k.addr ? " · " + esc(k.addr) : ""}${k.lat ? " · 📍" : ""}</div>
+     </button>`).join("")
+    : `<div class="hint">Outcomes land here — swipe sideways to review doors.</div>`;
+}
+function drawTrail() {
+  const pts = todayKnocks().filter(k => k.lat != null);
+  const cv = $("#trail"), ctx = cv.getContext("2d");
+  ctx.clearRect(0, 0, cv.width, cv.height);
+  $("#trail-hint").hidden = pts.length >= 2;
+  cv.style.display = pts.length >= 2 ? "block" : "none";
+  if (pts.length < 2) return;
+  const lats = pts.map(p => p.lat), lngs = pts.map(p => p.lng);
+  const pad = 20, W = cv.width - 2*pad, H = cv.height - 2*pad;
+  const sx = v => pad + (Math.max(...lngs) === Math.min(...lngs) ? W/2 : (v - Math.min(...lngs)) / (Math.max(...lngs) - Math.min(...lngs)) * W);
+  const sy = v => pad + (Math.max(...lats) === Math.min(...lats) ? H/2 : (Math.max(...lats) - v) / (Math.max(...lats) - Math.min(...lats)) * H);
+  ctx.lineWidth = 3; ctx.lineJoin = "round";
+  ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue("--navy").trim() || "#1B3A5C";
+  ctx.beginPath();
+  pts.forEach((p, i) => i ? ctx.lineTo(sx(p.lng), sy(p.lat)) : ctx.moveTo(sx(p.lng), sy(p.lat)));
+  ctx.stroke();
+  const goldC = getComputedStyle(document.documentElement).getPropertyValue("--gold").trim() || "#E8A020";
+  pts.forEach((p, i) => { ctx.beginPath();
+    ctx.fillStyle = i === pts.length - 1 ? goldC : ctx.strokeStyle;
+    ctx.arc(sx(p.lng), sy(p.lat), i === pts.length - 1 ? 6 : 4, 0, 7); ctx.fill(); });
+}
+function openDoor(id) {
+  const k = db.knocks.find(x => x.id == id); if (!k) return;
+  $("#door-body").innerHTML = `<div class="grab"></div>
+    <h2>${esc(k.out)}</h2>
+    <p class="hint" style="margin-top:-8px">${new Date(k.at).toLocaleString()}${k.lat ? " · GPS saved" : ""}</p>
+    <div class="frow"><label for="dr-addr">Address / note</label><input id="dr-addr" value="${esc(k.addr || "")}"></div>
+    <div class="frow"><label for="dr-out">Outcome</label>
+      <select id="dr-out">${Object.keys(OUTCOMES).map(o => `<option ${o===k.out?"selected":""}>${o}</option>`).join("")}</select></div>
+    <div class="actions">
+      <button class="btn danger" id="dr-del">Delete</button>
+      <button class="btn" id="dr-save">Save</button>
+    </div>`;
+  $("#sheet-door").classList.add("open");
+  $("#dr-save").onclick = () => { k.addr = $("#dr-addr").value.trim(); k.out = $("#dr-out").value;
+    save(); closeSheets(); renderDoors(); renderHome(); };
+  $("#dr-del").onclick = () => { db.knocks = db.knocks.filter(x => x.id != id);
+    save(); closeSheets(); renderDoors(); renderHome(); };
+}
+
+/* ================= leads ================= */
+let pipeFilter = null, addContext = null;
+function stripeFor(lead) {
+  const s = staleness(lead);
+  if (lead.status === "dead") return "var(--line)";
+  if (lead.status === "denied") return "var(--red)";
+  if (!s || s.level === "ok") return "var(--green)";
+  return s.level === "late" ? "var(--red)" : "var(--amber)";
+}
 function renderPipe() {
   const counts = {}; db.leads.forEach(l => counts[l.status] = (counts[l.status]||0)+1);
   $("#pipe").innerHTML = [["All", null, db.leads.length],
@@ -316,17 +641,9 @@ function renderPipe() {
     .map(([label, val, n]) => `<button data-pf="${val ?? ""}" class="${pipeFilter===val?"on":""}">${label} <b>${n}</b></button>`)
     .join("");
 }
-function stripeFor(lead) {
-  const s = staleness(lead);
-  if (lead.status === "dead") return "var(--line)";
-  if (lead.status === "denied") return "var(--red)";
-  if (!s || s.level === "ok") return "var(--green)";
-  return s.level === "late" ? "var(--red)" : "var(--amber)";
-}
 function leadCard(lead) {
   const s = staleness(lead);
-  let stale = "";
-  if (s && s.level !== "ok") stale = `<span class="chip ${s.level}">${s.d}d stale</span>`;
+  const stale = s && s.level !== "ok" ? `<span class="chip ${s.level}">${s.d}d stale</span>` : "";
   return `<button class="card lead-card" data-lead="${lead.id}" style="--stripe:${stripeFor(lead)}">
     <div class="lead-top"><span class="lead-name">${esc(lead.name)}</span>
       <span class="lead-val">${money(lead.value)}</span></div>
@@ -337,39 +654,69 @@ function leadCard(lead) {
 }
 function renderLeads() {
   renderPipe();
+  const due = db.leads.map(l => ({ l, s: staleness(l) })).filter(x => x.s && x.s.level !== "ok")
+    .sort((a,b) => (b.s.over||0) - (a.s.over||0));
+  $("#fu-badge").hidden = !due.length; $("#fu-badge").textContent = due.length;
+  $("#fu-strip").innerHTML = due.length ? `<div class="eyebrow">Follow-ups due (${due.length})</div>` +
+    due.slice(0, 5).map(({l, s}) =>
+      `<button class="card lead-card" data-lead="${l.id}" style="--stripe:${s.level==="late"?"var(--red)":"var(--amber)"}">
+        <div class="lead-top"><span class="lead-name">${esc(l.name)}</span>
+          <span class="chip ${s.level}">+${s.over}d overdue</span></div>
+        <div class="lead-sub">${l.status} · last touch ${s.d}d ago</div>
+      </button>`).join("") + `<div class="eyebrow">All leads</div>` : "";
   const q = $("#lead-search").value.trim().toLowerCase();
   let list = db.leads.slice().sort((a,b) => b.lastTouch - a.lastTouch);
   if (pipeFilter) list = list.filter(l => l.status === pipeFilter);
   if (q) list = list.filter(l => (l.name+" "+(l.address||"")+" "+(l.carrier||"")).toLowerCase().includes(q));
   $("#lead-list").innerHTML = list.length ? list.map(leadCard).join("")
     : `<div class="empty"><b>${db.leads.length ? "No matches" : "No leads yet"}</b>
-       ${db.leads.length ? "Try a different search or filter." : "Tap + after your next knock."}</div>`;
+       ${db.leads.length ? "Try a different search or filter." : "Log outcomes in Knock mode or tap +."}</div>`;
 }
-
-/* ================= follow-ups ================= */
-function renderFollowups() {
-  const due = db.leads.map(l => ({ l, s: staleness(l) }))
-    .filter(x => x.s && x.s.level !== "ok")
-    .sort((a,b) => (b.s.over||0) - (a.s.over||0));
-  $("#fu-badge").hidden = !due.length;
-  $("#fu-badge").textContent = due.length;
-  $("#fu-list").innerHTML = due.length ? due.map(({l, s}) =>
-    `<button class="card lead-card" data-lead="${l.id}" style="--stripe:${s.level==="late"?"var(--red)":"var(--amber)"}">
-       <div class="lead-top"><span class="lead-name">${esc(l.name)}</span>
-         <span class="chip ${s.level}">+${s.over}d overdue</span></div>
-       <div class="lead-sub">${l.status} · last touch ${s.d}d ago${l.phone ? " · " + esc(l.phone) : ""}</div>
-     </button>`).join("")
-    : `<div class="empty"><b>Nothing overdue</b>Go knock.</div>`;
+function openAddLead(ctx) {
+  addContext = ctx || null;
+  $$("#sheet-add input, #sheet-add textarea").forEach(i => i.value = "");
+  $("#add-title").textContent = ctx?.followup ? "Follow-up reminder" :
+    ctx?.status === "contract-signed" ? "Contract signed — who?" :
+    ctx?.status === "inspected" ? "Inspection set — who?" : "New lead";
+  const wx = db.weather[dayKey()];
+  $("#add-auto").textContent = "Auto-filled: " + [
+    new Date().toLocaleString([], {month:"short", day:"numeric", hour:"numeric", minute:"2-digit"}),
+    ctx?.knock ? "GPS from this door" : null,
+    wx ? `weather (${wx.cond})` : null,
+  ].filter(Boolean).join(" · ");
+  $("#sheet-add").classList.add("open");
+  setTimeout(() => $("#f-name").focus(), 60);
 }
-
-/* ================= lead detail ================= */
-let detailId = null;
+function saveLead() {
+  const name = $("#f-name").value.trim();
+  if (!name) { toast("Name is required"); return; }
+  const norm = s => s.toLowerCase().replace(/\s+/g, " ");
+  const dupe = db.leads.find(l => norm(l.name) === norm(name) &&
+    norm(l.address||"") === norm($("#f-address").value.trim()));
+  if (dupe && !confirm(`Looks like a duplicate of ${dupe.name}. Add anyway?`)) return;
+  const ctx = addContext, wx = db.weather[dayKey()];
+  const lead = {
+    id: db.seq++, name,
+    address: $("#f-address").value.trim(), phone: $("#f-phone").value.trim(),
+    carrier: $("#f-carrier").value.trim(), source: $("#f-source").value,
+    value: Number($("#f-value").value) || null, notes: $("#f-notes").value.trim(),
+    status: ctx?.status || "knocked",
+    weather: wx ? `${wx.cond}${wx.temp ? " " + wx.temp + "°F" : ""}` : null,
+    lat: ctx?.knock?.lat ?? null, lng: ctx?.knock?.lng ?? null,
+    created: Date.now(), lastTouch: Date.now(),
+    touches: [{ type:"door", note: ctx?.followup ? "knock — wants a follow-up" : "initial knock", at:Date.now() }],
+  };
+  if (ctx?.followup) lead.touches[0].note += " (from Knock mode)";
+  db.leads.push(lead);
+  if (ctx?.knock && !ctx.knock.addr && lead.address) { ctx.knock.addr = lead.address; }
+  save(); closeSheets(); renderLeads(); renderDoors(); addContext = null;
+  toast(`${name} saved — ${lead.status}`);
+}
 function openDetail(id) {
-  detailId = id;
   const l = db.leads.find(x => x.id === id); if (!l) return;
   const idx = PIPELINE.indexOf(l.status);
   const next = idx >= 0 && idx < PIPELINE.length - 1 ? PIPELINE[idx+1] : null;
-  const mapsUrl = "https://maps.apple.com/?q=" + encodeURIComponent(l.address || "");
+  const mapsUrl = "https://maps.apple.com/?q=" + encodeURIComponent(l.address || (l.lat ? l.lat + "," + l.lng : ""));
   $("#detail-body").innerHTML = `
     <div class="grab"></div>
     <h2>${esc(l.name)}</h2>
@@ -378,58 +725,66 @@ function openDetail(id) {
       <span class="chip status">${l.status}</span>
       ${l.carrier ? `<span class="chip status">${esc(l.carrier)}</span>` : ""}
       ${l.value ? `<span class="chip ok">${money(l.value)}</span>` : ""}
-      <span class="chip ${ (staleness(l)||{level:"ok"}).level==="ok" ? "ok" : (staleness(l).level) }">
-        touched ${daysSince(l.lastTouch)}d ago</span>
+      ${l.weather ? `<span class="chip warn">${esc(l.weather)}</span>` : ""}
+      <span class="chip ${(staleness(l)||{level:"ok"}).level==="ok" ? "ok" : staleness(l).level}">touched ${daysSince(l.lastTouch)}d ago</span>
     </div>
     <div class="detail-links">
       ${l.phone ? `<a href="tel:${esc(l.phone)}">Call</a><a href="sms:${esc(l.phone)}">Text</a>` : ""}
-      ${l.address ? `<a href="${mapsUrl}" target="_blank" rel="noopener">Map</a>` : ""}
+      ${(l.address || l.lat) ? `<a href="${mapsUrl}" target="_blank" rel="noopener">Map</a>` : ""}
     </div>
     ${l.notes ? `<div class="card" style="font-size:14px">${esc(l.notes)}</div>` : ""}
-
+    <div class="eyebrow">Property intel</div>
+    <div class="frow2">
+      <div class="frow"><label for="p-roof">Roof age (yrs)</label><input id="p-roof" inputmode="numeric" value="${esc(l.roofAge || "")}"></div>
+      <div class="frow"><label for="p-hail">Last hail date</label><input id="p-hail" placeholder="e.g. May 15" value="${esc(l.hailDate || "")}"></div>
+    </div>
+    <div class="frow"><label for="p-permit">Permit history</label><input id="p-permit" placeholder="e.g. re-roof permit 2019" value="${esc(l.permits || "")}"></div>
+    <div class="frow"><label for="p-ins">Insurance notes</label><input id="p-ins" placeholder="policy type, agent, deductible..." value="${esc(l.insNotes || "")}"></div>
+    <div class="actions"><button class="btn ghost" id="p-save">Save property intel</button></div>
     <div class="eyebrow">Move status</div>
     <div class="frow2">
       ${next ? `<button class="btn" id="d-advance">→ ${next}</button>` : ""}
       <select id="d-status" style="flex:1">${PIPELINE.concat(TERMINAL)
         .map(s => `<option ${s===l.status?"selected":""}>${s}</option>`).join("")}</select>
     </div>
-
     <div class="eyebrow">Log a touch</div>
     <div class="frow2">
       <select id="d-ttype">${TOUCH_TYPES.map(t=>`<option>${t}</option>`).join("")}</select>
       <input id="d-tnote" placeholder="note (optional)">
     </div>
     <div class="actions"><button class="btn gold" id="d-touch">Log touch</button></div>
-
     ${l.touches.length ? `<div class="eyebrow">History</div>
       <ul class="touchlog">${l.touches.slice().reverse().slice(0, 20).map(t =>
         `<li><b>${t.type}</b>${t.note ? " — " + esc(t.note) : ""}<div class="t-when">${new Date(t.at).toLocaleString()}</div></li>`).join("")}</ul>` : ""}
-
     <div class="actions">
       <button class="btn ghost" data-close>Close</button>
       <button class="btn danger" id="d-delete">Delete</button>
     </div>`;
   $("#sheet-detail").classList.add("open");
-
-  const setStatus = (ns) => {
+  const setStatus = ns => {
     if (ns === l.status) return;
-    if (ns === "dead") { const r = prompt("Reason it's dead?"); if (r === null) { renderAll(); openDetail(id); return; } l.deadReason = r; }
+    if (ns === "dead") { const r = prompt("Reason it's dead?"); if (r === null) { openDetail(id); return; } l.deadReason = r; }
     l.touches.push({ type:"status", note:`${l.status} → ${ns}`, at:Date.now() });
-    l.status = ns; l.lastTouch = Date.now(); save(); renderAll(); openDetail(id);
+    l.status = ns; l.lastTouch = Date.now(); save(); renderLeads(); renderHome(); openDetail(id);
+  };
+  $("#p-save").onclick = () => {
+    l.roofAge = $("#p-roof").value.trim(); l.hailDate = $("#p-hail").value.trim();
+    l.permits = $("#p-permit").value.trim(); l.insNotes = $("#p-ins").value.trim();
+    save(); toast("Property intel saved");
   };
   if (next) $("#d-advance").onclick = () => setStatus(next);
   $("#d-status").onchange = e => setStatus(e.target.value);
   $("#d-touch").onclick = () => {
     l.touches.push({ type:$("#d-ttype").value, note:$("#d-tnote").value.trim(), at:Date.now() });
-    l.lastTouch = Date.now(); save(); renderAll(); toast("Touch logged"); openDetail(id);
+    l.lastTouch = Date.now(); save(); renderLeads(); toast("Touch logged"); openDetail(id);
   };
   $("#d-delete").onclick = () => {
     if (!confirm(`Delete ${l.name}? This can't be undone.`)) return;
-    db.leads = db.leads.filter(x => x.id !== id); save(); closeSheets(); renderAll(); toast("Lead deleted");
+    db.leads = db.leads.filter(x => x.id !== id); save(); closeSheets(); renderLeads(); toast("Lead deleted");
   };
 }
 
-/* ================= objections ================= */
+/* ================= bible: objections ================= */
 const OBJECTIONS = [
 {c:"Price & Deductible",q:"I can't afford my deductible right now",t:"price deductible money afford broke",
  rf:"They're not saying no — they're revealing their real decision criterion. Shift from cost to timing and consequence.",
@@ -560,7 +915,6 @@ const OBJECTIONS = [
  rs:"Understood — can we confirm whether the policy carries ordinance-and-law coverage before we strike it? Drip edge is IRC code here, the city enforces it at permit, and the roof can't pass final inspection without it. If it's code-required to complete the repair, it belongs in the scope — and I'll send the code citation with photos so it's an easy supplement approval.",
  ps:"Framing it as coverage verification keeps the adjuster in problem-solving mode. Pre-packaging the citation lowers their effort to approve — effort, not generosity, is the real barrier."}
 ];
-
 const CARRIERS = [
 ["State Farm",
  ["Frequently disputes hail size vs. NOAA reports — bring impact photos with a coin or gauge for scale",
@@ -613,19 +967,15 @@ function objScore(query, o) {
   let s = 0;
   for (const w of q.split(/\s+/)) {
     if (hay.includes(w)) { s += 3; continue; }
-    // typo tolerance: match on 4-char prefixes ("deductable" hits "deductible")
     if (w.length >= 4 && new RegExp("\\b" + w.slice(0, 4)).test(hay)) { s += 2; continue; }
     if (body.includes(w)) s += 1;
   }
   return s;
 }
-function renderObjCats() {
+function renderObjections() {
   const cats = [...new Set(OBJECTIONS.map(o => o.c))];
   $("#obj-cats").innerHTML = [`<button data-cat="" class="${objCat?"":"on"}">All</button>`,
     ...cats.map(c => `<button data-cat="${esc(c)}" class="${objCat===c?"on":""}">${esc(c)}</button>`)].join("");
-}
-function renderObjections() {
-  renderObjCats();
   const q = $("#obj-search").value;
   let list = OBJECTIONS.map((o, i) => ({ o, i, s: objScore(q, o) })).filter(x => x.s > 0);
   if (objCat) list = list.filter(x => x.o.c === objCat);
@@ -644,8 +994,22 @@ function renderObjections() {
      </div>`).join("")
     : `<div class="empty"><b>No match</b>Try fewer words.</div>`;
 }
-
-/* quiz */
+function renderIntel() {
+  $("#intel-list").innerHTML = CARRIERS.map(([name, pb, cs]) => {
+    const notes = db.intelNotes[name] || [];
+    return `<div class="card">
+      <div class="lead-name">${esc(name)}</div>
+      <div class="intel-cols">
+        <h4 class="pb">Their likely pushback</h4><ul>${pb.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>
+        <h4 class="cs">My counters</h4><ul>${cs.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>
+        ${notes.length ? `<h4 style="color:var(--gold-ink)">My field notes</h4><ul>${notes.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>` : ""}
+      </div>
+      <div class="actions" style="display:flex;margin-top:12px">
+        <button class="btn ghost" data-learn="${esc(name)}" style="flex:1">+ Add field note</button>
+      </div>
+    </div>`;
+  }).join("");
+}
 function openQuiz() {
   const o = OBJECTIONS[Math.floor(Math.random() * OBJECTIONS.length)];
   $("#quiz-body").innerHTML = `
@@ -667,23 +1031,80 @@ function openQuiz() {
   $("#quiz-next").onclick = openQuiz;
 }
 
-/* ================= intel ================= */
-function renderIntel() {
-  $("#intel-list").innerHTML = CARRIERS.map(([name, pb, cs], i) => {
-    const notes = db.intelNotes[name] || [];
-    return `<div class="card">
-      <div class="lead-name">${esc(name)}</div>
-      <div class="intel-cols">
-        <h4 class="pb">Their likely pushback</h4><ul>${pb.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>
-        <h4 class="cs">My counters</h4><ul>${cs.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>
-        ${notes.length ? `<h4 style="color:var(--gold-ink)">My field notes</h4><ul>${notes.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>` : ""}
-      </div>
-      <div class="actions" style="display:flex;margin-top:12px">
-        <button class="btn ghost" data-learn="${esc(name)}" style="flex:1">+ Add field note</button>
-      </div>
-    </div>`;
-  }).join("");
+/* ================= stats ================= */
+const TIME_SLOTS = [["8–11 AM",8,11],["11 AM–2 PM",11,14],["2–5 PM",14,17],["5–8 PM",17,20],["After 8",20,24],["Before 8",0,8]];
+function bucketStats(knocks) {
+  const convos = knocks.filter(k => OUTCOMES[k.out]?.conv).length;
+  const leads = knocks.filter(k => OUTCOMES[k.out]?.lead).length;
+  return { n:knocks.length, convos, leads,
+           contact: knocks.length ? convos / knocks.length : 0,
+           leadRate: knocks.length ? leads / knocks.length : 0 };
 }
+function barRow(name, pct, detail, thin) {
+  return `<div class="bar-row${thin ? " thin" : ""}">
+    <span class="bar-name">${esc(name)}</span>
+    <span class="bar-track"><span class="bar-fill" style="width:${Math.round(Math.min(1,pct)*100)}%"></span></span>
+    <span class="bar-num">${detail}</span></div>`;
+}
+function renderStats() {
+  const ks = db.knocks;
+  const all = bucketStats(ks);
+  const inspDone = ks.filter(k => OUTCOMES[k.out]?.done).length;
+  const signed = ks.filter(k => OUTCOMES[k.out]?.signed).length;
+  const totalLeads = ks.filter(k => OUTCOMES[k.out]?.lead).length;
+  $("#st-totals").innerHTML = [
+    [ks.length, "Knocks"],
+    [Math.round(all.contact * 100) + "%", "Contact rate"],
+    [totalLeads ? (ks.length / totalLeads).toFixed(0) : "—", "Knocks / lead"],
+    [totalLeads, "Leads"],
+    [inspDone, "Inspections"],
+    [inspDone ? Math.round(100 * signed / inspDone) + "%" : "—", "Close rate"],
+  ].map(([v, l]) => `<div class="stat"><b>${v}</b><span>${l}</span></div>`).join("");
+
+  const byArea = {};
+  ks.forEach(k => { const a = k.area || "(unnamed)"; (byArea[a] = byArea[a] || []).push(k); });
+  const areas = Object.entries(byArea).map(([name, list]) => ({ name, ...bucketStats(list) }))
+    .sort((a, b) => b.leadRate - a.leadRate || b.n - a.n);
+  $("#st-areas").innerHTML = areas.length ? areas.map(a =>
+    barRow(a.name, a.leadRate * 5, `${a.leads} leads / ${a.n}`, a.n < 10)).join("")
+    : `<div class="empty"><b>No data yet</b>Name your area when you start knocking.</div>`;
+
+  const slots = TIME_SLOTS.map(([label, lo, hi]) => {
+    const list = ks.filter(k => { const h = new Date(k.at).getHours(); return h >= lo && h < hi; });
+    return { label, ...bucketStats(list) };
+  }).filter(s => s.n > 0).sort((a, b) => b.contact - a.contact);
+  $("#st-times").innerHTML = slots.length ? slots.map(s =>
+    barRow(s.label, s.contact, `${Math.round(s.contact*100)}% · ${s.n}`, s.n < 10)).join("")
+    : `<div class="empty"><b>No data yet</b>Knock outcomes fill this in.</div>`;
+}
+
+/* ================= weather + goals sheets ================= */
+let wxCond = null;
+function openWx() {
+  const wx = db.weather[dayKey()] || {};
+  wxCond = wx.cond || null;
+  $("#wx-conditions").innerHTML = WX_CONDITIONS.map(c =>
+    `<button data-wxc="${c}" class="${wxCond===c?"on":""}">${c}</button>`).join("");
+  $("#wx-temp").value = wx.temp || ""; $("#wx-wind").value = wx.wind || "";
+  $("#sheet-wx").classList.add("open");
+}
+$("#wx-save").onclick = () => {
+  db.weather[dayKey()] = { cond: wxCond || "—", temp: $("#wx-temp").value.trim(),
+                           wind: $("#wx-wind").value.trim() };
+  save(); closeSheets(); renderHome(); toast("Weather set for today");
+};
+function openGoals() {
+  $("#g-knocks").value = db.goals.knocks; $("#g-convos").value = db.goals.convos;
+  $("#g-insp").value = db.goals.insp; $("#g-signed").value = db.goals.signed;
+  $("#g-avgjob").value = db.settings.avgJob;
+  $("#sheet-goals").classList.add("open");
+}
+$("#g-save").onclick = () => {
+  db.goals = { knocks:+$("#g-knocks").value || 0, convos:+$("#g-convos").value || 0,
+               insp:+$("#g-insp").value || 0, signed:+$("#g-signed").value || 0 };
+  db.settings.avgJob = +$("#g-avgjob").value || 0;
+  save(); closeSheets(); renderHome(); toast("Goals updated");
+};
 
 /* ================= backup / restore ================= */
 function exportData() {
@@ -701,7 +1122,8 @@ function importData(file) {
       const data = JSON.parse(r.result);
       if (!Array.isArray(data.leads)) throw new Error("bad file");
       if (!confirm(`Replace current data with backup (${data.leads.length} leads)?`)) return;
-      db = Object.assign({ leads:[], intelNotes:{}, seq:1 }, data);
+      db = Object.assign({ leads:[], intelNotes:{}, seq:1, knocks:[], sessions:[], weather:{},
+        goals:{knocks:100, convos:25, insp:5, signed:2}, settings:{avgJob:1500} }, data);
       save(); renderAll(); toast("Backup restored");
     } catch (e) { toast("That file isn't an AQE backup"); }
   };
@@ -710,18 +1132,24 @@ function importData(file) {
 
 /* ================= wiring ================= */
 function closeSheets() { $$(".sheet-wrap").forEach(s => s.classList.remove("open")); }
-function renderAll() { renderLeads(); renderFollowups(); renderIntel(); }
+function renderAll() { renderHome(); renderLeads(); renderDoors(); renderObjections(); renderIntel(); renderStats(); drawTrail(); }
 
 document.addEventListener("click", e => {
-  const t = e.target.closest("[data-tab],[data-close],[data-lead],[data-pf],[data-cat],[data-learn],.obj-card button");
+  const t = e.target.closest("[data-tab],[data-close],[data-lead],[data-pf],[data-cat],[data-learn],[data-out],[data-door],[data-wxc],.obj-card > button");
   if (!t) return;
   if (t.dataset.tab !== undefined) {
     $$(".tabbar button").forEach(b => b.classList.toggle("on", b === t));
     $$(".view").forEach(v => v.classList.toggle("active", v.id === "view-" + t.dataset.tab));
-    $("#fab").style.display = t.dataset.tab === "leads" ? "" : "none";
+    $("#fab").style.display = t.dataset.tab === "leads" ? "block" : "none";
+    if (t.dataset.tab === "home") renderHome();
+    if (t.dataset.tab === "stats") renderStats();
     return;
   }
   if (t.dataset.close !== undefined) { closeSheets(); return; }
+  if (t.dataset.out) { recordKnock(t.dataset.out); return; }
+  if (t.dataset.door) { openDoor(t.dataset.door); return; }
+  if (t.dataset.wxc) { wxCond = t.dataset.wxc;
+    $$("#wx-conditions button").forEach(b => b.classList.toggle("on", b === t)); return; }
   if (t.dataset.lead) { openDetail(Number(t.dataset.lead)); return; }
   if (t.dataset.pf !== undefined) { pipeFilter = t.dataset.pf || null; renderLeads(); return; }
   if (t.dataset.cat !== undefined) { objCat = t.dataset.cat || null; renderObjections(); return; }
@@ -737,26 +1165,12 @@ document.addEventListener("click", e => {
   if (objCard) objCard.classList.toggle("obj-open");
 });
 
-$("#fab").onclick = () => { $$("#sheet-add input, #sheet-add textarea").forEach(i => i.value = "");
-  $("#sheet-add").classList.add("open"); setTimeout(() => $("#f-name").focus(), 60); };
-$("#btn-save-lead").onclick = () => {
-  const name = $("#f-name").value.trim();
-  if (!name) { toast("Name is required"); return; }
-  const norm = s => s.toLowerCase().replace(/\s+/g, " ");
-  const dupe = db.leads.find(l => norm(l.name) === norm(name) &&
-    norm(l.address||"") === norm($("#f-address").value.trim()));
-  if (dupe && !confirm(`Looks like a duplicate of ${dupe.name}. Add anyway?`)) return;
-  db.leads.push({
-    id: db.seq++, name,
-    address: $("#f-address").value.trim(), phone: $("#f-phone").value.trim(),
-    carrier: $("#f-carrier").value.trim(), source: $("#f-source").value,
-    value: Number($("#f-value").value) || null, notes: $("#f-notes").value.trim(),
-    status: "knocked", created: Date.now(), lastTouch: Date.now(),
-    touches: [{ type:"door", note:"initial knock", at:Date.now() }],
-  });
-  save(); closeSheets(); renderAll(); toast("Lead saved — status: knocked");
-};
-
+$("#btn-start").onclick = startSession;
+$("#btn-end").onclick = endSession;
+$("#wx-btn").onclick = openWx;
+$("#btn-goals").onclick = openGoals;
+$("#fab").onclick = () => openAddLead(null);
+$("#btn-save-lead").onclick = saveLead;
 $("#lead-search").addEventListener("input", renderLeads);
 $("#obj-search").addEventListener("input", renderObjections);
 $("#btn-quiz").onclick = openQuiz;
@@ -764,5 +1178,6 @@ $("#btn-export").onclick = exportData;
 $("#btn-import").onclick = () => $("#import-file").click();
 $("#import-file").onchange = e => { if (e.target.files[0]) importData(e.target.files[0]); e.target.value = ""; };
 
-renderAll(); renderObjections();
+renderAll();
+setInterval(() => { if ($("#view-home").classList.contains("active")) renderHome(); }, 60000);
 </script>
