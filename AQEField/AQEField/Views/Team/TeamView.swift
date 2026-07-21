@@ -1,30 +1,33 @@
 import SwiftUI
 
-/// Team leaderboard scaffold. Today it ranks you against your own daily
-/// goals; the row model and layout are Supabase-ready, so teammates appear
-/// here the moment sync lands — no UI rework.
+/// Team leaderboard. When signed in to Cloud Sync it ranks every rep on the
+/// Supabase project by today's numbers; offline (or signed out) it falls
+/// back to your own local stats so the screen always works.
 struct TeamView: View {
     @Environment(AppStore.self) private var store
+    @Environment(CloudSync.self) private var sync
+    @State private var teamRows: [CloudSync.TeamMemberStats] = []
+    @State private var isLoading = false
 
-    private struct LeaderboardRow: Identifiable {
-        let id: String
-        let name: String
-        let knocks: Int
-        let leads: Int
-        let signed: Int
-        let isMe: Bool
-    }
-
-    private var rows: [LeaderboardRow] {
+    private var rows: [CloudSync.TeamMemberStats] {
+        if !teamRows.isEmpty { return teamRows }
+        // Local fallback: just you.
         let stats = store.todayStats
-        let name = store.profile.name.isEmpty ? "You" : store.profile.name
-        return [LeaderboardRow(id: "me", name: name, knocks: stats.knocks,
-                               leads: stats.leads, signed: stats.contractsSigned, isMe: true)]
+        var me = CloudSync.TeamMemberStats(
+            id: sync.config.userID ?? "me",
+            name: store.profile.name.isEmpty ? "You" : store.profile.name)
+        me.knocks = stats.knocks
+        me.leads = stats.leads
+        me.signed = stats.contractsSigned
+        return [me]
     }
 
     var body: some View {
         List {
             Section("Today's Leaderboard") {
+                if isLoading && teamRows.isEmpty {
+                    ProgressView()
+                }
                 ForEach(Array(rows.enumerated()), id: \.element.id) { index, row in
                     HStack(spacing: 12) {
                         Text("#\(index + 1)")
@@ -32,7 +35,7 @@ struct TeamView: View {
                             .foregroundStyle(index == 0 ? AQETheme.coral : .secondary)
                             .frame(width: 40)
                         VStack(alignment: .leading, spacing: 2) {
-                            Text(row.name + (row.isMe ? " (you)" : ""))
+                            Text(row.name + (row.id == sync.config.userID ? " (you)" : ""))
                                 .font(.headline)
                             Text("\(row.knocks) knocks · \(row.leads) leads · \(row.signed) signed")
                                 .font(.subheadline)
@@ -43,23 +46,34 @@ struct TeamView: View {
                 }
             }
             Section("Team Goal") {
-                let stats = store.todayStats
-                let goal = store.goals.knocks
+                let teamKnocks = rows.reduce(0) { $0 + $1.knocks }
+                let goal = store.goals.knocks * max(rows.count, 1)
                 VStack(alignment: .leading, spacing: 6) {
-                    Text("\(stats.knocks) / \(goal) knocks")
+                    Text("\(teamKnocks) / \(goal) knocks")
                         .font(.headline)
-                    ProgressView(value: Double(min(stats.knocks, goal)), total: Double(goal))
+                    ProgressView(value: Double(min(teamKnocks, goal)), total: Double(max(goal, 1)))
                         .tint(AQETheme.coral)
                 }
                 .padding(.vertical, 4)
             }
-            Section {
-                Label("Teammates appear here once Supabase team sync is connected.",
-                      systemImage: "person.3.fill")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
+            if !sync.isSignedIn {
+                Section {
+                    Label("Sign in under More → Cloud Sync to see the whole team here.",
+                          systemImage: "person.3.fill")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
             }
         }
         .navigationTitle("Team")
+        .task { await refresh() }
+        .refreshable { await refresh() }
+    }
+
+    private func refresh() async {
+        guard sync.isSignedIn else { return }
+        isLoading = true
+        teamRows = await sync.fetchTeamToday()
+        isLoading = false
     }
 }

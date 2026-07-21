@@ -227,6 +227,53 @@ final class CloudSync {
     }
 }
 
+// MARK: - Team leaderboard
+
+extension CloudSync {
+    struct TeamMemberStats: Identifiable {
+        let id: String
+        let name: String
+        var knocks = 0
+        var leads = 0
+        var signed = 0
+    }
+
+    /// Today's knocks/leads/signed for every rep on the project.
+    func fetchTeamToday() async -> [TeamMemberStats] {
+        guard isSignedIn else { return [] }
+        do {
+            let decoder = JSONDecoder()
+            struct RepName: Decodable { let id: String; let name: String? }
+            let reps = try decoder.decode(
+                [RepName].self,
+                from: await run(restRequest(table: "reps", method: "GET", query: "select=id,name")))
+
+            struct EventSlim: Decodable { let rep_id: String?; let outcome: String }
+            let startOfDay = ISO8601DateFormatter().string(from: Calendar.current.startOfDay(for: Date()))
+            let query = "select=rep_id,outcome&timestamp=gte.\(startOfDay)"
+            let events = try decoder.decode(
+                [EventSlim].self,
+                from: await run(restRequest(table: "knock_events", method: "GET", query: query)))
+
+            var statsByRep: [String: TeamMemberStats] = [:]
+            for rep in reps {
+                statsByRep[rep.id] = TeamMemberStats(id: rep.id, name: rep.name ?? "Rep")
+            }
+            for event in events {
+                guard let repID = event.rep_id else { continue }
+                var stats = statsByRep[repID] ?? TeamMemberStats(id: repID, name: "Rep")
+                stats.knocks += 1
+                if event.outcome == "lead" { stats.leads += 1 }
+                if event.outcome == "contractSigned" { stats.signed += 1 }
+                statsByRep[repID] = stats
+            }
+            return statsByRep.values.sorted { ($0.knocks, $0.leads) > ($1.knocks, $1.leads) }
+        } catch {
+            return []
+        }
+    }
+}
+
 // MARK: - Row payloads (column names match the Supabase schema)
 
 private struct RepRow: Codable {

@@ -52,8 +52,13 @@ in. The backend (tables: reps, knock_events, leads, property_intel,
 storms; RLS: authenticated read-all, write-own via created_by) and the
 office web dashboard live in that Lovable project.
 
-Still open: live team leaderboard fed from Supabase, PDF imports into the
-Field Bible, Apple Wallet pass (needs a signing certificate), Apple Watch.
+**Phase 7 (this build):** the Team leaderboard goes live — when signed in
+to Cloud Sync it ranks every rep on the Supabase project by today's
+knocks/leads/signed (pull-to-refresh), with a combined team knock goal;
+offline or signed out it falls back to local-only stats.
+
+Still open: PDF imports into the Field Bible, Apple Wallet pass (needs a
+signing certificate), Apple Watch.
 
 ## Build & run (on your Mac)
 
