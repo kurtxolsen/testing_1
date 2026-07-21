@@ -1,6 +1,7 @@
 import Foundation
 import CoreLocation
 import Observation
+import WidgetKit
 
 /// Offline-first store. Everything is kept in memory and persisted to JSON on
 /// every change, so the app works with zero service and never shows a spinner.
@@ -17,11 +18,35 @@ final class AppStore {
 
     private let fileURL: URL
 
-    init() {
-        let dir = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
-            .appendingPathComponent("AQEField", isDirectory: true)
+    /// Shared with the widget extension. Falls back to the app's own
+    /// container if the App Group entitlement isn't provisioned.
+    static let appGroupID = "group.com.aqe.field"
+
+    static func storeFileURL() -> URL {
+        let base: URL
+        if let group = FileManager.default
+            .containerURL(forSecurityApplicationGroupIdentifier: appGroupID) {
+            base = group
+        } else {
+            base = FileManager.default.urls(for: .applicationSupportDirectory,
+                                            in: .userDomainMask)[0]
+        }
+        let dir = base.appendingPathComponent("AQEField", isDirectory: true)
         try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
-        fileURL = dir.appendingPathComponent("store.json")
+        return dir.appendingPathComponent("store.json")
+    }
+
+    init() {
+        fileURL = Self.storeFileURL()
+        // One-time migration from the pre-App-Group location.
+        if !FileManager.default.fileExists(atPath: fileURL.path) {
+            let legacy = FileManager.default.urls(for: .applicationSupportDirectory,
+                                                  in: .userDomainMask)[0]
+                .appendingPathComponent("AQEField/store.json")
+            if FileManager.default.fileExists(atPath: legacy.path) {
+                try? FileManager.default.copyItem(at: legacy, to: fileURL)
+            }
+        }
         load()
     }
 
@@ -33,6 +58,7 @@ final class AppStore {
         let event = KnockEvent(outcome: outcome, latitude: latitude, longitude: longitude,
                                address: address, note: note)
         events.append(event)
+        ShiftActivityManager.sync(stats: todayStats, goals: goals)
         return event
     }
 
@@ -303,5 +329,6 @@ final class AppStore {
                                 profile: profile)
         guard let data = try? JSONEncoder().encode(snapshot) else { return }
         try? data.write(to: fileURL, options: .atomic)
+        WidgetCenter.shared.reloadAllTimelines()
     }
 }

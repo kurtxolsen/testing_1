@@ -52,8 +52,17 @@ struct MoreView: View {
                             .font(.headline)
                     }
                 }
+                Section("Shift") {
+                    Button {
+                        ShiftActivityManager.end()
+                    } label: {
+                        Label("End Shift Timer", systemImage: "stop.circle.fill")
+                            .font(.headline)
+                            .foregroundStyle(AQETheme.statusRed)
+                    }
+                }
                 Section {
-                    LabeledContent("Version", value: "0.4.0 · Phase 4")
+                    LabeledContent("Version", value: "0.5.0 · Phase 5")
                 }
             }
             .navigationTitle("More")

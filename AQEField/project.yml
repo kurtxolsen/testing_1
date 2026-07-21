@@ -8,7 +8,7 @@ options:
 settings:
   base:
     SWIFT_VERSION: "5.9"
-    MARKETING_VERSION: "0.1.0"
+    MARKETING_VERSION: "0.5.0"
     CURRENT_PROJECT_VERSION: "1"
 targets:
   AQEField:
@@ -20,12 +20,21 @@ targets:
           - "Resources/**"
       - path: AQEField/Resources
         buildPhase: resources
+    dependencies:
+      - target: AQEFieldWidgets
+        embed: true
+    entitlements:
+      path: AQEField/AQEField.entitlements
+      properties:
+        com.apple.security.application-groups:
+          - group.com.aqe.field
     info:
       path: AQEField/Info.plist
       properties:
         CFBundleDisplayName: AQE Field
         UILaunchScreen: {}
         UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
+        NSSupportsLiveActivities: true
         NSLocationWhenInUseUsageDescription: >-
           AQE Field tags every knock with GPS so your map, reports, and
           neighborhood stats stay accurate.
@@ -35,3 +44,27 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: com.aqe.field
         TARGETED_DEVICE_FAMILY: "1"
         INFOPLIST_KEY_UIUserInterfaceStyle: Light
+  AQEFieldWidgets:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: AQEFieldWidgets
+      # Shared with the app target:
+      - path: AQEField/Models/Models.swift
+      - path: AQEField/Models/ShiftActivity.swift
+      - path: AQEField/Theme/AQETheme.swift
+    entitlements:
+      path: AQEFieldWidgets/AQEFieldWidgets.entitlements
+      properties:
+        com.apple.security.application-groups:
+          - group.com.aqe.field
+    info:
+      path: AQEFieldWidgets/Info.plist
+      properties:
+        CFBundleDisplayName: AQE Field Widgets
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.widgetkit-extension
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.aqe.field.widgets
+        TARGETED_DEVICE_FAMILY: "1"
