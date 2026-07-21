@@ -15,6 +15,7 @@ struct FieldBibleView: View {
 struct FieldBibleContentView: View {
     @State private var bible = BibleStore()
     @State private var query = ""
+    @State private var showQuiz = false
 
     private var results: [BibleArticle] {
         bible.search(query)
@@ -33,6 +34,19 @@ struct FieldBibleContentView: View {
                     prompt: "Objection, carrier, GAF, script…")
         .navigationDestination(for: BibleArticle.self) { article in
             ArticleView(article: article)
+        }
+        .toolbar {
+            ToolbarItem(placement: .primaryAction) {
+                Button {
+                    showQuiz = true
+                } label: {
+                    Label("Quiz", systemImage: "brain.head.profile")
+                }
+                .disabled(bible.objectionEntries.isEmpty)
+            }
+        }
+        .sheet(isPresented: $showQuiz) {
+            ObjectionQuizView(entries: bible.objectionEntries)
         }
     }
 

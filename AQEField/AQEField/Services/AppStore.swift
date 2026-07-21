@@ -66,6 +66,19 @@ final class AppStore {
         leads.append(lead)
     }
 
+    /// Log a cadence touch on a lead and clear a manual follow-up it satisfies.
+    func logTouch(leadID: UUID, channel: TouchChannel, note: String = "") {
+        guard let index = leads.firstIndex(where: { $0.id == leadID }) else { return }
+        var lead = leads[index]
+        var log = lead.touchLog
+        log.append(LeadTouch(channel: channel, note: note))
+        lead.touches = log
+        if let manual = lead.followUpDate, manual <= Date() {
+            lead.followUpDate = nil
+        }
+        leads[index] = lead
+    }
+
     func deleteEvent(_ event: KnockEvent) {
         events.removeAll { $0.id == event.id }
     }
@@ -125,6 +138,27 @@ final class AppStore {
         let signed = Double(stats.contractsSigned) * goals.valuePerSignedJob
         let pipeline = Double(stats.inspectionsSet + stats.inspectionsCompleted) * goals.valuePerSignedJob * 0.35
         return signed + pipeline
+    }
+
+    // MARK: - Follow-up queue (Roofing Strong cadence)
+
+    struct FollowUpItem: Identifiable {
+        let lead: Lead
+        let step: RSACadence.Step
+        let dueDate: Date
+        var isOverdue: Bool { dueDate < Date() }
+        var id: UUID { lead.id }
+    }
+
+    /// Every lead, ordered by when its next touch is owed (overdue first).
+    var followUpQueue: [FollowUpItem] {
+        leads
+            .map { FollowUpItem(lead: $0, step: $0.nextCadenceStep, dueDate: $0.effectiveFollowUpDate) }
+            .sorted { $0.dueDate < $1.dueDate }
+    }
+
+    var overdueFollowUpCount: Int {
+        followUpQueue.filter(\.isOverdue).count
     }
 
     // MARK: - Property intel

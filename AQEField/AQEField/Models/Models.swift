@@ -89,6 +89,8 @@ struct Lead: Codable, Identifiable, Hashable {
     var weatherAtCreation: String?
     var stormEvent: String?
     var followUpDate: Date?
+    /// Logged follow-up contacts; optional so pre-cadence store files decode.
+    var touches: [LeadTouch]?
 }
 
 // MARK: - Goals
