@@ -5,6 +5,7 @@ struct AQEFieldApp: App {
     @State private var store = AppStore()
     @State private var location = LocationService()
     @State private var weather = WeatherService()
+    @State private var sync = CloudSync()
 
     var body: some Scene {
         WindowGroup {
@@ -12,6 +13,7 @@ struct AQEFieldApp: App {
                 .environment(store)
                 .environment(location)
                 .environment(weather)
+                .environment(sync)
                 .tint(AQETheme.coral)
                 .task {
                     location.requestPermission()
@@ -19,6 +21,7 @@ struct AQEFieldApp: App {
                         store?.recordTrailPoint(coordinate)
                     }
                     await weather.refresh(coordinate: location.lastCoordinate)
+                    await sync.syncNow(store: store)
                 }
         }
     }
