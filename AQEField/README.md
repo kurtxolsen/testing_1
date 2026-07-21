@@ -42,8 +42,18 @@ The store moved to an App Group container (`group.com.aqe.field`, with
 silent fallback and one-time migration) so the widget extension can read
 it. `AQEFieldWidgets/` is a second XcodeGen target embedded in the app.
 
-Still open: Supabase sync + auth, PDF imports into the Field Bible, Apple
-Wallet pass (needs a signing certificate), Apple Watch app.
+**Phase 6 (this build):** Cloud Sync — a dependency-free Supabase client
+(`CloudSync`) with email/password auth, token refresh, idempotent push of
+all local data (upserts keyed on device UUIDs), and own-rows pull so a new
+phone restores your history. Configure in More → Cloud Sync with the
+Supabase Project URL + anon key from the "AQE Office Hub" Lovable project
+(backend settings → API); the app also auto-syncs on launch when signed
+in. The backend (tables: reps, knock_events, leads, property_intel,
+storms; RLS: authenticated read-all, write-own via created_by) and the
+office web dashboard live in that Lovable project.
+
+Still open: live team leaderboard fed from Supabase, PDF imports into the
+Field Bible, Apple Wallet pass (needs a signing certificate), Apple Watch.
 
 ## Build & run (on your Mac)
 

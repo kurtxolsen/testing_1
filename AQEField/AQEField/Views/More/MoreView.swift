@@ -51,6 +51,12 @@ struct MoreView: View {
                         Label("Team & Leaderboard", systemImage: "person.3.fill")
                             .font(.headline)
                     }
+                    NavigationLink {
+                        CloudSyncView()
+                    } label: {
+                        Label("Cloud Sync", systemImage: "icloud.fill")
+                            .font(.headline)
+                    }
                 }
                 Section("Shift") {
                     Button {
@@ -62,7 +68,7 @@ struct MoreView: View {
                     }
                 }
                 Section {
-                    LabeledContent("Version", value: "0.5.0 · Phase 5")
+                    LabeledContent("Version", value: "0.6.0 · Phase 6")
                 }
             }
             .navigationTitle("More")
