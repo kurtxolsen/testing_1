@@ -14,7 +14,8 @@ from datetime import date
 from pathlib import Path
 
 import click
-from PIL import Image, ImageOps
+# Lazy import Pillow inside prepare_image() to reduce CLI startup time
+# from PIL import Image, ImageOps  (imported on demand)
 from reportlab.lib.colors import HexColor, white
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.utils import ImageReader, simpleSplit
@@ -166,6 +167,11 @@ def find_photos(folder: Path) -> list[Path]:
 
 def prepare_image(path: Path, tmpdir: Path) -> tuple[Path, float]:
     """EXIF-correct, downscale, recompress. Returns (jpeg path, aspect ratio)."""
+    # Import Pillow lazily to avoid slowing CLI startup for commands that don't
+    # need image processing (e.g., quick list/help). This keeps heavy imports
+    # off the module import path.
+    from PIL import Image, ImageOps
+
     with Image.open(path) as im:
         im = ImageOps.exif_transpose(im)
         if im.width > MAX_PHOTO_WIDTH:
