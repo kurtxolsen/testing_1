@@ -20,9 +20,18 @@ final class CloudSync {
     }
     var isSignedIn: Bool { config.accessToken != nil && config.userID != nil }
 
+    /// The AQE Office Hub backend, pre-filled so there's nothing to paste.
+    /// Publishable keys are designed to ship in clients — row-level security,
+    /// not key secrecy, is what protects the data. (Editable in Settings if
+    /// the project ever moves.)
+    enum Backend {
+        static let url = "https://pxlbrqeqkpjimxwvfypg.supabase.co"
+        static let publishableKey = "sb_publishable_Dz0z-NYVGJJzP9Q9oSDzRQ_Jl6_1wY4"
+    }
+
     struct SyncConfig: Codable {
-        var urlString = ""           // https://xyz.supabase.co
-        var anonKey = ""
+        var urlString = Backend.url
+        var anonKey = Backend.publishableKey
         var email = ""
         var accessToken: String?
         var refreshToken: String?
@@ -37,6 +46,9 @@ final class CloudSync {
         if let data = try? Data(contentsOf: configURL),
            let saved = try? JSONDecoder().decode(SyncConfig.self, from: data) {
             config = saved
+            // Configs saved before the backend shipped have blank fields.
+            if config.urlString.isEmpty { config.urlString = Backend.url }
+            if config.anonKey.isEmpty { config.anonKey = Backend.publishableKey }
         }
     }
 
