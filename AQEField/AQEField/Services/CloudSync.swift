@@ -420,28 +420,6 @@ private struct StormRow: Codable {
 
 // MARK: - Helpers
 
-extension KnockOutcome {
-    /// Stable wire code (matches the backend's outcome values).
-    var code: String {
-        switch self {
-        case .noAnswer: return "noAnswer"
-        case .conversation: return "conversation"
-        case .notInterested: return "notInterested"
-        case .renter: return "renter"
-        case .followUp: return "followUp"
-        case .lead: return "lead"
-        case .inspectionSet: return "inspectionSet"
-        case .inspectionCompleted: return "inspectionCompleted"
-        case .contractSigned: return "contractSigned"
-        }
-    }
-
-    init?(code: String) {
-        guard let match = KnockOutcome.allCases.first(where: { $0.code == code }) else { return nil }
-        self = match
-    }
-}
-
 private extension ISO8601DateFormatter {
     static let sync: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
