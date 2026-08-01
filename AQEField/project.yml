@@ -51,6 +51,7 @@ targets:
       - path: AQEFieldWidgets
       # Shared with the app target:
       - path: AQEField/Models/Models.swift
+      - path: AQEField/Models/FollowUpCadence.swift
       - path: AQEField/Models/ShiftActivity.swift
       - path: AQEField/Theme/AQETheme.swift
     entitlements:
