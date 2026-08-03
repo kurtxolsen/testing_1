@@ -1,0 +1,185 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Get AQE Field on your iPhone</title>
+<style>
+  :root {
+    --bg:#F3F5F8; --card:#FFFFFF; --ink:#16273A; --muted:#5A6b7d;
+    --navy:#1B3A5C; --navy-soft:#E7EDF4; --gold:#E8A020; --gold-ink:#8A5D0D;
+    --line:#DBE2EA; --code-bg:#132234; --code-ink:#E6EDF5; --code-tok:#F0AC36;
+    --green:#2E7D4F; --green-soft:#E7F2EB; --amber-soft:#FAF0DC; --amber-ink:#8A6410;
+  }
+  @media (prefers-color-scheme: dark){ :root{
+    --bg:#0C1420; --card:#152438; --ink:#E8ECF2; --muted:#93A3B7;
+    --navy:#4E82BE; --navy-soft:#1B2D45; --gold:#F0AC36; --gold-ink:#F0AC36;
+    --line:#24374F; --code-bg:#0A121E; --code-ink:#DCE6F1; --code-tok:#F0AC36;
+    --green:#5DB683; --green-soft:#15311F; --amber-soft:#33290F; --amber-ink:#E3B45B;
+  }}
+  :root[data-theme="light"]{ --bg:#F3F5F8; --card:#FFFFFF; --ink:#16273A; --muted:#5A6b7d; --line:#DBE2EA; --navy:#1B3A5C; --navy-soft:#E7EDF4; --gold:#E8A020; --gold-ink:#8A5D0D; --code-bg:#132234; --code-ink:#E6EDF5; --green:#2E7D4F; --green-soft:#E7F2EB; --amber-soft:#FAF0DC; --amber-ink:#8A6410; }
+  :root[data-theme="dark"]{ --bg:#0C1420; --card:#152438; --ink:#E8ECF2; --muted:#93A3B7; --line:#24374F; --navy:#4E82BE; --navy-soft:#1B2D45; --gold:#F0AC36; --gold-ink:#F0AC36; --code-bg:#0A121E; --code-ink:#DCE6F1; --green:#5DB683; --green-soft:#15311F; --amber-soft:#33290F; --amber-ink:#E3B45B; }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;}
+  body{background:var(--bg); color:var(--ink);
+    font:16px/1.6 -apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,sans-serif;
+    -webkit-font-smoothing:antialiased;}
+  .wrap{max-width:760px; margin:0 auto; padding:0 18px 80px;}
+  a{color:var(--navy); font-weight:600;}
+
+  header{background:var(--navy); color:#fff; margin:0 -18px 26px; padding:36px 22px 30px;
+    border-radius:0 0 20px 20px;}
+  .wrap>header{margin-top:0;}
+  header .kick{font-size:11px; letter-spacing:.18em; text-transform:uppercase; color:var(--gold);
+    font-weight:700;}
+  header h1{margin:6px 0 8px; font-size:29px; line-height:1.15; text-wrap:balance;}
+  header p{margin:0; color:#C9D6E5; font-size:15px; max-width:52ch;}
+
+  h2{font-size:21px; margin:34px 0 12px; display:flex; align-items:center; gap:10px; text-wrap:balance;}
+  h2 .n{flex:0 0 auto; width:30px; height:30px; border-radius:50%; background:var(--gold); color:#20293A;
+    font-size:15px; font-weight:800; display:grid; place-items:center;}
+  h3{font-size:16px; margin:20px 0 6px;}
+  p{margin:0 0 12px;}
+  ul,ol{margin:0 0 14px; padding-left:22px;}
+  li{margin-bottom:7px;}
+  strong{font-weight:700;}
+
+  .card{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:18px 20px;
+    margin-bottom:14px;}
+  .lede{font-size:15px; color:var(--muted);}
+
+  .fork{display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:6px 0 8px;}
+  @media (max-width:520px){ .fork{grid-template-columns:1fr;} }
+  .fork a{display:block; text-decoration:none; background:var(--card); border:1px solid var(--line);
+    border-radius:14px; padding:16px 16px; color:var(--ink);}
+  .fork a:hover{border-color:var(--gold);}
+  .fork .lbl{font-weight:750; font-size:16px; margin-bottom:2px;}
+  .fork .sub{font-size:13px; color:var(--muted); font-weight:400;}
+  .fork .go{color:var(--navy); font-size:13px; font-weight:700; margin-top:8px;}
+
+  pre{background:var(--code-bg); color:var(--code-ink); border-radius:12px; padding:14px 16px;
+    overflow-x:auto; font:13.5px/1.6 "SF Mono",ui-monospace,Menlo,Consolas,monospace; margin:0 0 14px;
+    -webkit-overflow-scrolling:touch;}
+  pre .c{color:#7C90A8;}      /* comment */
+  pre .k{color:var(--code-tok); font-weight:600;}
+  code{background:var(--navy-soft); color:var(--navy); border-radius:6px; padding:1px 6px;
+    font:13px/1.4 "SF Mono",ui-monospace,Menlo,Consolas,monospace; font-weight:600;}
+  pre code{background:none; color:inherit; padding:0;}
+
+  .note{border-left:4px solid var(--gold); background:var(--amber-soft); color:var(--amber-ink);
+    border-radius:0 10px 10px 0; padding:12px 16px; margin:0 0 14px; font-size:14.5px;}
+  .note b{color:var(--amber-ink);}
+  .win{border-left:4px solid var(--green); background:var(--green-soft); color:var(--green);
+    border-radius:0 10px 10px 0; padding:12px 16px; margin:0 0 14px; font-size:14.5px;}
+  .win b{color:var(--green);}
+
+  table{width:100%; border-collapse:collapse; margin:4px 0 16px; font-size:14.5px;}
+  th,td{text-align:left; padding:9px 12px; border-bottom:1px solid var(--line); vertical-align:top;}
+  th{font-size:11px; letter-spacing:.06em; text-transform:uppercase; color:var(--muted);}
+  td strong{color:var(--ink);}
+
+  .eyebrow{font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--gold-ink);
+    font-weight:700; margin:0 0 4px;}
+  hr{border:0; border-top:1px solid var(--line); margin:30px 0;}
+  .foot{color:var(--muted); font-size:13px; text-align:center; margin-top:30px;}
+  .anchor{scroll-margin-top:16px;}
+</style>
+
+<div class="wrap">
+<header>
+  <div class="kick">American Quality Exteriors</div>
+  <h1>Get AQE&nbsp;Field onto your iPhone</h1>
+  <p>The native app — with widgets, the Live Activity timer, and the full Field Bible — is built and in your repo. Here's how it gets from GitHub to your home screen.</p>
+</header>
+
+<div class="card">
+  <p class="lede" style="margin-bottom:14px"><strong style="color:var(--ink)">First, the one hard rule:</strong> a real iPhone app can only be built on a <strong>Mac</strong>. Apple requires their toolchain (Xcode) to compile and sign it — there's no Windows, Linux, or website that can do this step. So everything below forks on that.</p>
+  <div class="eyebrow">Pick your path</div>
+  <div class="fork">
+    <a href="#have-mac">
+      <div class="lbl">✅ I have a Mac</div>
+      <div class="sub">Any Mac from ~2018 on, running a recent macOS</div>
+      <div class="go">Go to Path A →</div>
+    </a>
+    <a href="#no-mac">
+      <div class="lbl">🚫 I don't have a Mac</div>
+      <div class="sub">Windows/Chromebook only, or not sure</div>
+      <div class="go">Go to Path B →</div>
+    </a>
+  </div>
+</div>
+
+<hr>
+
+<h2 class="anchor" id="have-mac"><span class="n">A</span> You have a Mac</h2>
+<p>Three phases: install two free tools, build the app to the Simulator to confirm it works, then put it on your actual phone. Budget about 45 minutes the first time (most of it is Xcode downloading).</p>
+
+<h3>A1 · Install the two tools (one time)</h3>
+<ol>
+  <li><strong>Xcode</strong> — open the Mac App Store, search <strong>Xcode</strong>, Install. It's big (~7 GB), so start it and go knock a few doors. When it finishes, open it once and click through the license prompt.</li>
+  <li><strong>Homebrew + XcodeGen</strong> — open the <strong>Terminal</strong> app (Cmd-Space, type "Terminal") and paste these one at a time:</li>
+</ol>
+<pre><span class="c"># installs Homebrew (a tool installer) — it'll ask for your Mac password</span>
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+<span class="c"># then installs XcodeGen, which turns our project.yml into an Xcode project</span>
+brew install xcodegen</pre>
+
+<h3>A2 · Get the code and build it</h3>
+<p>Still in Terminal, paste these. The last line builds the app to the iPhone Simulator — if it ends with <strong>Build succeeded</strong>, everything compiles.</p>
+<pre><span class="c"># download the repo and step into the app folder</span>
+git clone https://github.com/kurtxolsen/testing_1.git
+cd testing_1/AQEField
+
+<span class="c"># generate + build + launch in the Simulator, in one command</span>
+./build.sh run</pre>
+<div class="win"><b>What you should see:</b> the iPhone Simulator opens and AQE Field launches — dashboard, Knock tab, Reports with the follow-up queue, and the Field Bible with the Quiz button. That's the real app running. If a red error appears instead, copy the last ~15 lines back to me and I'll fix it.</div>
+
+<h3>A3 · Put it on your real iPhone</h3>
+<p>This is where you choose based on how you'll use it. Both start the same way — plug your iPhone into the Mac with a cable, open the project in Xcode:</p>
+<pre>open AQEField.xcodeproj</pre>
+<p>In Xcode: click the device dropdown at the top and pick <strong>your iPhone</strong>, then click <strong>Signing &amp; Capabilities</strong> on the left, and under <strong>Team</strong> choose <strong>Add an Account…</strong> and sign in with your Apple ID. Then press the <strong>▶ Play</strong> button. Now, the two options:</p>
+
+<table>
+  <tr><th>&nbsp;</th><th>Free (Personal Team)</th><th>Apple Developer Program</th></tr>
+  <tr><td><strong>Cost</strong></td><td>$0 — just your Apple ID</td><td>$99 / year</td></tr>
+  <tr><td><strong>Best for</strong></td><td>Just your phone, trying it out</td><td>Keeping it long-term; putting it on your team's phones</td></tr>
+  <tr><td><strong>The catch</strong></td><td>App stops opening after <strong>7 days</strong> — you re-plug in and press ▶ again to renew it</td><td>None — install once, lasts a year; adds TestFlight for the team</td></tr>
+  <tr><td><strong>Team install</strong></td><td>No — one phone at a time, by cable</td><td>Yes — TestFlight sends it to any rep by email link</td></tr>
+</table>
+
+<div class="note"><b>My recommendation:</b> start <strong>free</strong> today to get it on your phone and use it for real. If it earns its place in your daily routine, pay the $99 for the Developer Program — that removes the 7-day expiry and unlocks TestFlight so the rest of the AQE crew can install it from an email link, no cable needed.</div>
+
+<p>On the phone, the very first launch of a free-signed app shows "Untrusted Developer" — go to <strong>Settings → General → VPN &amp; Device Management</strong>, tap your Apple ID, and tap <strong>Trust</strong>. One time only.</p>
+
+<hr>
+
+<h2 class="anchor" id="no-mac"><span class="n">B</span> You don't have a Mac</h2>
+<p>No Mac means no local build — but you're not stuck. Three realistic ways to get there, cheapest first:</p>
+
+<h3>Option 1 · Borrow a Mac for 30 minutes</h3>
+<p>The whole of Path A takes one sitting. If a friend, family member, or someone at the office has a Mac, borrow it — sign in with <em>your</em> Apple ID in the signing step so the app is tied to you, plug in your iPhone, and you're done. This is by far the least-expensive route.</p>
+
+<h3>Option 2 · Rent a Mac in the cloud</h3>
+<p>Services like <strong>MacStadium</strong> or <strong>MacinCloud</strong> give you a Mac you control from a Windows PC's browser, by the hour or month. You'd run all of Path A there — but the on-device install step still needs your physical iPhone connected, which a cloud Mac can't do. So cloud Macs are good for <em>building and testing</em>, and pair best with the paid Developer Program + <strong>TestFlight</strong>, which delivers the app to your phone over the internet (no cable). Realistically: ~$20–30 in cloud-Mac time plus the $99/yr Apple fee.</p>
+
+<h3>Option 3 · Hand it to an iOS developer (recommended if you want it hands-off)</h3>
+<p>The code is done and building — a freelance iOS developer's whole job here is signing and shipping, which is an hour or two of work, not a build-from-scratch. Point them at the repo and this exact instruction:</p>
+<div class="card" style="margin-top:8px">
+  <p class="eyebrow">Hand this to the developer</p>
+  <p style="margin-bottom:0"><em>"Repo: <strong>github.com/kurtxolsen/testing_1</strong>, app is in <code>/AQEField</code>. It's SwiftUI + XcodeGen (run <code>./build.sh</code>). Please enroll me in the Apple Developer Program under my Apple ID, then get it onto my iPhone and set up TestFlight so I can add my sales team. It already builds — I just need it signed and shipped."</em></p>
+</div>
+<div class="note"><b>Meanwhile:</b> you already have the <strong>web version</strong> on your home screen (the "AQE Field" icon you added in Safari). It covers the daily essentials — dashboard, knock tracking, follow-ups, the Bible, and stats — so you're not waiting empty-handed while the native app gets shipped.</div>
+
+<hr>
+
+<h2>What you're installing</h2>
+<p>So it's clear what all this effort buys you over the web version — the native app adds the things only a real iOS app can do:</p>
+<ul>
+  <li><strong>Dynamic Island &amp; Live Activity</strong> — your knock-session timer and count live on the lock screen and around the camera.</li>
+  <li><strong>Home &amp; lock-screen widgets</strong> — today's knocks, conversations, and goal progress at a glance.</li>
+  <li><strong>Siri Shortcuts &amp; the Action Button</strong> — log a knock outcome without opening the app.</li>
+  <li><strong>The full Field Bible</strong> — GAF system, roof anatomy, damage ID, Never Split the Difference, warranty guide, plus the 32-objection quiz drill.</li>
+  <li><strong>The Roofing Strong follow-up engine</strong> — the automatic day 0/1/3/7/14/30 cadence with overdue alerts.</li>
+</ul>
+
+<p class="foot">Stuck on any step? Copy the exact screen or error back into the chat and I'll get you unstuck. — AQE Field build guide</p>
+</div>
