@@ -6,6 +6,7 @@ enum AppTab: Hashable {
 
 /// Bottom navigation + the global floating "+" action button.
 struct RootView: View {
+    @Environment(AppStore.self) private var store
     @State private var selectedTab: AppTab = .dashboard
     @State private var showQuickAdd = false
     @State private var showNewLead = false
@@ -25,6 +26,7 @@ struct RootView: View {
                     .tag(AppTab.knock)
                 ReportsView()
                     .tabItem { Label("Reports", systemImage: "chart.line.uptrend.xyaxis") }
+                    .badge(store.overdueFollowUpCount)
                     .tag(AppTab.reports)
                 MoreView()
                     .tabItem { Label("More", systemImage: "line.3.horizontal") }

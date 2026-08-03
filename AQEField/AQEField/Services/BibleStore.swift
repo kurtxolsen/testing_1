@@ -50,6 +50,68 @@ final class BibleStore {
         }
     }
 
+    // MARK: - Structured objection entries (for quiz mode)
+
+    /// One drillable objection: the homeowner's words plus the word-for-word
+    /// response, parsed from the strict "## OBJECTION:" format the Objections
+    /// articles use.
+    struct ObjectionEntry: Identifiable, Hashable {
+        let id: String
+        let objection: String
+        let category: String
+        let reframe: String
+        let response: String
+        let psychology: String
+    }
+
+    /// Every objection across the Objections category, parsed once per access.
+    var objectionEntries: [ObjectionEntry] {
+        articles(in: "Objections").flatMap(Self.parseObjections)
+    }
+
+    static func parseObjections(from article: BibleArticle) -> [ObjectionEntry] {
+        var entries: [ObjectionEntry] = []
+        var objection: String?
+        var sections: [String: [String]] = [:]
+        var currentSection: String?
+
+        func flush() {
+            guard let text = objection else { return }
+            let joined = { (key: String) in
+                (sections[key] ?? []).joined(separator: " ")
+            }
+            entries.append(ObjectionEntry(
+                id: "\(article.id)#\(entries.count)",
+                objection: text,
+                category: article.title,
+                reframe: joined("the reframe"),
+                response: joined("word-for-word response"),
+                psychology: joined("the psychology")))
+            objection = nil
+            sections = [:]
+            currentSection = nil
+        }
+
+        for rawLine in article.body.components(separatedBy: "\n") {
+            let line = rawLine.trimmingCharacters(in: .whitespaces)
+            if line.hasPrefix("## OBJECTION:") {
+                flush()
+                objection = String(line.dropFirst("## OBJECTION:".count))
+                    .trimmingCharacters(in: .whitespaces)
+                    .trimmingCharacters(in: CharacterSet(charactersIn: "\""))
+            } else if line.hasPrefix("### ") {
+                currentSection = String(line.dropFirst(4)).lowercased()
+            } else if line == "---" || line.hasPrefix("**Tags:**") || line.hasPrefix("**Category:**") {
+                if line == "---" { currentSection = nil }
+            } else if let section = currentSection, !line.isEmpty {
+                sections[section, default: []].append(line)
+            }
+        }
+        flush()
+        // Only keep entries that actually have a deliverable response.
+        return entries.filter { !$0.response.isEmpty }
+    }
+
     // MARK: - Loading
 
     private struct Manifest: Decodable {

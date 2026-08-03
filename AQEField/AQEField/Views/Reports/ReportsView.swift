@@ -8,15 +8,19 @@ struct ReportsView: View {
     var body: some View {
         NavigationStack {
             List {
-                Section("Follow-Ups") {
-                    if upcomingFollowUps.isEmpty {
-                        Text("No follow-ups scheduled.")
+                Section {
+                    if store.followUpQueue.isEmpty {
+                        Text("No leads yet — the cadence starts the moment you log one.")
                             .foregroundStyle(.secondary)
                     } else {
-                        ForEach(upcomingFollowUps) { lead in
-                            FollowUpRow(lead: lead)
+                        ForEach(store.followUpQueue) { item in
+                            FollowUpRow(item: item)
                         }
                     }
+                } header: {
+                    Text("Follow-Ups")
+                } footer: {
+                    Text("Runs the Roofing Strong cadence automatically: touches on day 0, 1, 3, 7, 14, 30, then quarterly. Swipe a row to log the touch. Overdue clears before new knocking starts.")
                 }
                 Section("Last 7 Days") {
                     ForEach(last7Days, id: \.date) { day in
@@ -131,12 +135,6 @@ struct ReportsView: View {
         }
     }
 
-    private var upcomingFollowUps: [Lead] {
-        store.leads
-            .filter { $0.followUpDate != nil }
-            .sorted { ($0.followUpDate ?? .distantFuture) < ($1.followUpDate ?? .distantFuture) }
-    }
-
     private struct DayCount {
         let date: Date
         let knocks: Int
@@ -163,25 +161,26 @@ struct ReportsView: View {
 }
 
 struct FollowUpRow: View {
-    let lead: Lead
+    @Environment(AppStore.self) private var store
+    let item: AppStore.FollowUpItem
 
-    private var isOverdue: Bool {
-        (lead.followUpDate ?? .distantFuture) < Date()
-    }
+    private var lead: Lead { item.lead }
 
     var body: some View {
         HStack(spacing: 12) {
-            Image(systemName: isOverdue ? "exclamationmark.circle.fill" : "clock.arrow.circlepath")
+            Image(systemName: item.isOverdue ? "exclamationmark.circle.fill" : item.step.channel.icon)
                 .font(.title3)
-                .foregroundStyle(isOverdue ? AQETheme.statusRed : AQETheme.statusOrange)
+                .foregroundStyle(item.isOverdue ? AQETheme.statusRed : AQETheme.statusOrange)
             VStack(alignment: .leading, spacing: 2) {
                 Text(lead.name.isEmpty ? (lead.address.isEmpty ? "Lead" : lead.address) : lead.name)
                     .font(.headline)
-                if let date = lead.followUpDate {
-                    Text(date.formatted(date: .abbreviated, time: .shortened))
-                        .font(.subheadline)
-                        .foregroundStyle(isOverdue ? AQETheme.statusRed : .secondary)
-                }
+                Text("Touch \(item.step.number) · \(item.step.channel.rawValue) — \(item.step.goal)")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(2)
+                Text(item.dueDate.formatted(date: .abbreviated, time: .shortened))
+                    .font(.subheadline)
+                    .foregroundStyle(item.isOverdue ? AQETheme.statusRed : .secondary)
             }
             Spacer()
             if !lead.phone.isEmpty, let url = URL(string: "tel:\(lead.phone.filter(\.isNumber))") {
@@ -193,5 +192,13 @@ struct FollowUpRow: View {
             }
         }
         .padding(.vertical, 2)
+        .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+            Button {
+                store.logTouch(leadID: lead.id, channel: item.step.channel)
+            } label: {
+                Label("Log touch", systemImage: "checkmark.circle.fill")
+            }
+            .tint(AQETheme.statusGreen)
+        }
     }
 }
