@@ -6,13 +6,40 @@ from datetime import date, datetime, timedelta
 from pathlib import Path
 
 import click
-from rich.console import Console
-from rich.panel import Panel
-from rich.table import Table
+
+# Lazily import rich components to speed up CLI startup time.
+_console = None
+
+def get_console():
+    global _console
+    if _console is None:
+        from rich.console import Console as _Console
+        _console = _Console()
+    return _console
+
+class _ConsoleProxy:
+    def __getattr__(self, name):
+        return getattr(get_console(), name)
+
+console = _ConsoleProxy()
+
+class _TableFactory:
+    def __call__(self, *args, **kwargs):
+        from rich.table import Table as _TableClass
+        return _TableClass(*args, **kwargs)
+
+Table = _TableFactory()
+
+class _PanelFactory:
+    def __call__(self, *args, **kwargs):
+        from rich.panel import Panel as _PanelClass
+        return _PanelClass(*args, **kwargs)
+
+Panel = _PanelFactory()
 
 from . import db
 
-console = Console()
+# Console is lazily constructed via get_console()/console proxy above
 
 
 # ---------------------------------------------------------------------------
