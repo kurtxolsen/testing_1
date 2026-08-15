@@ -68,7 +68,7 @@ struct MoreView: View {
                     }
                 }
                 Section {
-                    LabeledContent("Version", value: "0.7.0 · Phase 7")
+                    LabeledContent("Version", value: "0.8.0 · Phase 8")
                 }
             }
             .navigationTitle("More")

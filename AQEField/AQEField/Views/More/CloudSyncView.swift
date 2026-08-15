@@ -16,15 +16,9 @@ struct CloudSyncView: View {
                 Text("Backs up your knocks, leads, intel, and storms — and pulls in teammates on the same project for the live leaderboard.")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
-            }
-            Section("Supabase Project") {
-                TextField("Project URL (https://xyz.supabase.co)", text: $sync.config.urlString)
-                    .keyboardType(.URL)
-                    .textInputAutocapitalization(.never)
-                    .autocorrectionDisabled()
-                TextField("Anon (public) key", text: $sync.config.anonKey)
-                    .textInputAutocapitalization(.never)
-                    .autocorrectionDisabled()
+                Label("Connected to AQE Office Hub", systemImage: "checkmark.seal.fill")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(AQETheme.statusGreen)
             }
             if sync.isSignedIn {
                 Section("Account") {
@@ -70,10 +64,19 @@ struct CloudSyncView: View {
                         .foregroundStyle(AQETheme.statusRed)
                 }
             }
-            Section("Where to find these") {
-                Text("Lovable project “AQE Office Hub” → backend/database settings → API. Copy the Project URL and the anon public key. Never paste the service_role key here.")
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
+            Section("Advanced") {
+                DisclosureGroup("Backend connection") {
+                    TextField("Project URL", text: $sync.config.urlString)
+                        .keyboardType(.URL)
+                        .textInputAutocapitalization(.never)
+                        .autocorrectionDisabled()
+                    TextField("Publishable key", text: $sync.config.anonKey)
+                        .textInputAutocapitalization(.never)
+                        .autocorrectionDisabled()
+                    Text("Pre-filled for the AQE Office Hub project. Only change these if the backend moves — and never paste a service_role key.")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                }
             }
         }
         .navigationTitle("Cloud Sync")

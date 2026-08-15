@@ -45,10 +45,10 @@ it. `AQEFieldWidgets/` is a second XcodeGen target embedded in the app.
 **Phase 6 (this build):** Cloud Sync — a dependency-free Supabase client
 (`CloudSync`) with email/password auth, token refresh, idempotent push of
 all local data (upserts keyed on device UUIDs), and own-rows pull so a new
-phone restores your history. Configure in More → Cloud Sync with the
-Supabase Project URL + anon key from the "AQE Office Hub" Lovable project
-(backend settings → API); the app also auto-syncs on launch when signed
-in. The backend (tables: reps, knock_events, leads, property_intel,
+phone restores your history. The backend connection is pre-filled
+(`CloudSync.Backend`, editable under More → Cloud Sync → Advanced), so
+setup is just creating an account; the app auto-syncs on launch when
+signed in. The backend (tables: reps, knock_events, leads, property_intel,
 storms; RLS: authenticated read-all, write-own via created_by) and the
 office web dashboard live in that Lovable project.
 
@@ -57,8 +57,19 @@ to Cloud Sync it ranks every rep on the Supabase project by today's
 knocks/leads/signed (pull-to-refresh), with a combined team knock goal;
 offline or signed out it falls back to local-only stats.
 
+**Phase 8 (this build):** Apple Watch app (`AQEFieldWatch/`, a third
+XcodeGen target) — six wrist-sized outcome buttons that log a knock in one
+tap with haptic confirmation, plus a second page with the knock-goal ring
+and today's convos/leads. `WatchLink` (phone) and `PhoneLink` (watch) pair
+over WatchConnectivity: knocks send live when reachable and fall back to
+`transferUserInfo` so they queue durably with the phone asleep in a pocket
+or out of range; the phone stamps its current GPS fix onto wrist knocks and
+pushes authoritative stats back via application context.
+`KnockOutcome.code` moved to `Models.swift` — it's now the shared wire
+format for both Supabase and the Watch.
+
 Still open: PDF imports into the Field Bible, Apple Wallet pass (needs a
-signing certificate), Apple Watch.
+signing certificate).
 
 ## Build & run (on your Mac)
 

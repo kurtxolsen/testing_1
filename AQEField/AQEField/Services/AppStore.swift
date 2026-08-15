@@ -59,6 +59,7 @@ final class AppStore {
                                address: address, note: note)
         events.append(event)
         ShiftActivityManager.sync(stats: todayStats, goals: goals)
+        WatchLink.shared.sendTodayStats(todayStats, goals: goals)
         return event
     }
 

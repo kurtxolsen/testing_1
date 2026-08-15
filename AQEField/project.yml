@@ -8,7 +8,7 @@ options:
 settings:
   base:
     SWIFT_VERSION: "5.9"
-    MARKETING_VERSION: "0.5.0"
+    MARKETING_VERSION: "0.8.0"
     CURRENT_PROJECT_VERSION: "1"
 targets:
   AQEField:
@@ -22,6 +22,8 @@ targets:
         buildPhase: resources
     dependencies:
       - target: AQEFieldWidgets
+        embed: true
+      - target: AQEFieldWatch
         embed: true
     entitlements:
       path: AQEField/AQEField.entitlements
@@ -69,3 +71,23 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.aqe.field.widgets
         TARGETED_DEVICE_FAMILY: "1"
+  AQEFieldWatch:
+    type: application
+    platform: watchOS
+    deploymentTarget: "10.0"
+    sources:
+      - path: AQEFieldWatch
+      # Shared with the iPhone app:
+      - path: AQEField/Models/Models.swift
+      - path: AQEField/Theme/AQETheme.swift
+    info:
+      path: AQEFieldWatch/Info.plist
+      properties:
+        CFBundleDisplayName: AQE Field
+        WKApplication: true
+        WKCompanionAppBundleIdentifier: com.aqe.field
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.aqe.field.watchkitapp
+        TARGETED_DEVICE_FAMILY: "4"
+        INFOPLIST_KEY_CFBundleDisplayName: AQE Field

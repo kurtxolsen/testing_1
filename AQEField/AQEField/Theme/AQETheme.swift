@@ -10,7 +10,8 @@ enum AQETheme {
     static let screenBackground = Color(red: 0.95, green: 0.96, blue: 0.97)
 
     /// Pin / outcome status colors (match the map legend).
-    static let statusGray = Color(.systemGray)
+    // Explicit RGB rather than Color(.systemGray) so the theme compiles on watchOS too.
+    static let statusGray = Color(red: 0.56, green: 0.56, blue: 0.58)
     static let statusBlue = Color(red: 0.20, green: 0.48, blue: 0.97)
     static let statusOrange = Color(red: 1.0, green: 0.58, blue: 0.0)
     static let statusGreen = Color(red: 0.13, green: 0.69, blue: 0.30)

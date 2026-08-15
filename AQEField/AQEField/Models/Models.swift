@@ -45,6 +45,27 @@ enum KnockOutcome: String, Codable, CaseIterable, Identifiable {
         }
     }
 
+    /// Stable wire code — used by the Supabase backend and the Watch link, so
+    /// it must never change even if a display name does.
+    var code: String {
+        switch self {
+        case .noAnswer: return "noAnswer"
+        case .conversation: return "conversation"
+        case .notInterested: return "notInterested"
+        case .renter: return "renter"
+        case .followUp: return "followUp"
+        case .lead: return "lead"
+        case .inspectionSet: return "inspectionSet"
+        case .inspectionCompleted: return "inspectionCompleted"
+        case .contractSigned: return "contractSigned"
+        }
+    }
+
+    init?(code: String) {
+        guard let match = KnockOutcome.allCases.first(where: { $0.code == code }) else { return nil }
+        self = match
+    }
+
     /// Did the homeowner actually talk to us?
     var isConversation: Bool {
         switch self {
